@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-//teste
+
 #define atrasar() sleep(ATRASO)
 		     
 int contasSaldos[NUM_CONTAS];
