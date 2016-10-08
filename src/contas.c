@@ -7,6 +7,7 @@
 		     
 int contasSaldos[NUM_CONTAS];
 
+int flag=-1;
 
 int contaExiste(int idConta) {
   return (idConta > 0 && idConta <= NUM_CONTAS);
@@ -44,18 +45,26 @@ int lerSaldo(int idConta) {
   return contasSaldos[idConta - 1];
 }
 
+void nope(int flag){
+  flag = 1;
+  printf("SIGNAAAAAAAAALLLLLLLLLLLLLLLLLLLLLLLLLLL\n");
+  exit(EXIT_SUCCESS);
+}
 
 void simular(int numAnos) {
-  int saldo;
   int contasSaldosSimular[NUM_CONTAS];
   for(int i = 0;i < NUM_CONTAS;i++){
     contasSaldosSimular[i]=lerSaldo(i+1);
   }
+  signal(SIGUSR1,nope);
+  if(flag == 0) return;
   for(int i=0;i<numAnos;i++){
+    signal(SIGUSR1,nope);
+    if(flag == 0) return;
     printf("SIMULACAO: Ano %d\n=================\n",i);
     for(int ii=0;ii<NUM_CONTAS;ii++){
-      saldo = (contasSaldosSimular[i] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
-      printf("Conta %d, Saldo %d\n",ii+1,saldo > 0 ? saldo : -saldo);
+      contasSaldosSimular[i] = (contasSaldosSimular[i] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
+      printf("Conta %d, Saldo %d\n",ii+1,contasSaldosSimular[i] > 0 ? contasSaldosSimular[i] : -contasSaldosSimular[i]);
     }
     printf("\n");
   }

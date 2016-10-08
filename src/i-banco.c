@@ -23,6 +23,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include <stdlib.h>
 
 #define COMANDO_DEBITAR "debitar"
@@ -30,6 +31,8 @@
 #define COMANDO_LER_SALDO "lerSaldo"
 #define COMANDO_SIMULAR "simular"
 #define COMANDO_SAIR "sair"
+#define COMANDO_AGORA "agora"
+#define COMANDO_SAIR_AGORA "sairAgora"
 
 #define MAXARGS 3
 #define BUFFER_SIZE 100
@@ -60,23 +63,40 @@ int main (int argc, char** argv) {
         int numargs;
         pids pids[MAXCHILDS];
         numargs = readLineArguments(args, MAXARGS+1, buffer, BUFFER_SIZE);
-
+        int estado,now;
         /* EOF (end of file) do stdin ou comando "sair" */
         if (numargs < 0 ||
-	        (numargs > 0 && (strcmp(args[0], COMANDO_SAIR) == 0))) {
-            int estado,now;
+            (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
+            printf("%s asdasdsa\n\n",args[1]);
+            if (strcmp(args[1], COMANDO_AGORA) == 0) {
+                printf("jahsbdhasbdjsa");
+            } else {
+                for(int i=0;i<numPids;i++){
+                    now = waitpid(pids[i].pid,&estado,0); //0 OK, -1 NOT OK
+                    pids[i].estado=estado;
+                }
+                printf("i-banco vai terminar.\n--\n");
+                for(int i=0;i<numPids;i++){
+                    printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado >= 0) ? "normalmente" : "abruptamente");
+                }
+                printf("--\n");           
+                exit(EXIT_SUCCESS);
+            }
+    
+        }
+        /* 
+        else if (strcmp(args[0], COMANDO_SAIR_AGORA) == 0) {
             for(int i=0;i<numPids;i++){
+                //kill(pids[i].pid,SIGUSR1);
                 now = waitpid(pids[i].pid,&estado,0); //0 OK, -1 NOT OK
                 pids[i].estado=estado;
             }
-            printf("i-banco vai terminar.\n--\n");
+             printf("i-banco vai terminar.\n--\n");
             for(int i=0;i<numPids;i++){
                 printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado >= 0) ? "normalmente" : "abruptamente");
             }
-            printf("--\n");           
-            exit(EXIT_SUCCESS);
         }
-    
+        */
         else if (numargs == 0)
             /* Nenhum argumento; ignora e volta a pedir */
             continue;
