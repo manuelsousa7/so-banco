@@ -64,7 +64,7 @@ void nope(){
 
 void isDead(){
   if(flag == 1) {
-    printf("Simulacao terminada por signal\n");
+    //printf("Simulaaaaacao terminada por signal\n");
     exit(EXIT_FAILURE);
   }
 }
@@ -81,15 +81,15 @@ void simular(int numAnos) {
   isDead();
 
   for(int i = 0;i < numAnos;i++){
-    isDead();
     printf("SIMULACAO: Ano %d\n=================\n", i);
     for(int ii = 0;ii < NUM_CONTAS;ii++){
       if(i != 0 && contasSaldosSimular[ii] != 0){
         contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
       }
       printf("Conta %d, Saldo %d\n",ii+1,contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
-      atrasar();
+      //atrasar();
     }
+    isDead();
     printf("\n");
-  }      
+  }    
 }

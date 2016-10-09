@@ -49,6 +49,7 @@
 typedef struct PID{
     pid_t pid;
     int estado;
+    int signal;
 }pids;
 
 /******************************************************************************************
@@ -63,7 +64,7 @@ int main (int argc, char** argv) {
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
     int numPids = 0;
-    pid_t wpid;
+    //pid_t wpid;
     inicializarContas();
 
     printf("Bem-vinda/o ao i-banco\n\n");
@@ -90,14 +91,23 @@ int main (int argc, char** argv) {
 
             for(int i=0;i<numPids;i++){
                 
-                wpid = waitpid(pids[i].pid,&estado,0);
+                if(waitpid(pids[i].pid,&estado,0) == -1)
+                    printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
                 if(errno == ECHILD || errno == EINTR || errno == EINVAL)
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                if(WIFSIGNALED(estado))
-                    printf("Simulacao terminada por signal\n");
-                pids[i].estado = estado;
+                if(WIFEXITED(estado) != 0){
+                    if(WEXITSTATUS(estado) == EXIT_FAILURE)
+                        pids[i].signal = 1;
+                    else
+                        pids[i].signal = 0;
+                }
+                pids[i].estado = WIFEXITED(estado) ? 1 : -1;
             } 
-
+            for(int i=0;i<numPids;i++){
+                if(pids[i].signal == 1){
+                    printf("Simulacao terminada por signal\n");
+                }
+            }
             printf("i-banco vai terminar.\n--\n");
 
             for(int i=0;i<numPids;i++){
