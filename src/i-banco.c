@@ -1,42 +1,47 @@
 /******************************************************************************************
-* File Name:    main.c
-* Author:       Goncalo Marques (84696) / Manuel Sousa (84740)
+* File Name:    i-banco.c
+* Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
-* NAME:         Hashtags - IST/IAED - 2015/2016 2º Semestre
-* SYNOPSIS:     #include <stdio.h>
-                #include <string.h>  - strdup
-                #include <stdlib.h>  - qsort
-                #include <stdbool.h> - bool's
-                #include "avl.h" - toda a estrura da Arvore AVL
-                #include "auxiliares.h" - funcoes auxiliares a main 
-* DESCRIPTION:  funcao main
+* NAME:         Banco - IST/SO - 2016/2017 1º Semestre
+* SYNOPSIS:     #include <stdio.h> - I/O regular
+                #include <string.h>  - char strings
+                #include <stdlib.h>  - exit(), atoi()
+                #include <unistd.h> - fork()
+                #include <signal.h> - signal(), kill()
+                #include <sys/wait.h> - waitpid()
+                #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
+                #include "contas.h" - Prototipos de todas as operações relacionadas com contas
+* DESCRIPTION:  funcao main (i-banco)
 * DIAGNOSTICS:  tested
 * USAGE:        make clean
                 make all
                 make run
 *****************************************************************************************/
 
-#include "commandlinereader.h"
-#include "contas.h"
-#include <stdlib.h>
+/*Bibliotecas*/
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <signal.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include "commandlinereader.h"
+#include "contas.h"
 
+/*Macros - Comandos*/
 #define COMANDO_DEBITAR "debitar"
 #define COMANDO_CREDITAR "creditar"
 #define COMANDO_LER_SALDO "lerSaldo"
 #define COMANDO_SIMULAR "simular"
 #define COMANDO_SAIR "sair"
 #define COMANDO_AGORA "agora"
-#define COMANDO_SAIR_AGORA "sairAgora"
 
+/*Constantes*/
 #define MAXARGS 3
 #define BUFFER_SIZE 100
 #define MAXCHILDS 20
+
+/*Estruturas*/
 
 typedef struct PID{
     pid_t pid;
@@ -46,15 +51,15 @@ typedef struct PID{
 /******************************************************************************************
 * main()
 *
-* Arguments: nenhum
-* Returns: 0
-* Description:  ajhsgdhjsabjdbas
+* Arguments:    Nenhum
+* Returns: int  0
+* Description:  Leitura dos comandos do banco e criação de de processos nas simulações
 *****************************************************************************************/
 int main (int argc, char** argv) {
 
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
-    int numPids=0;
+    int numPids = 0;
     inicializarContas();
 
     printf("Bem-vinda/o ao i-banco\n\n");
@@ -63,32 +68,41 @@ int main (int argc, char** argv) {
         int numargs;
         pids pids[MAXCHILDS];
         numargs = readLineArguments(args, MAXARGS+1, buffer, BUFFER_SIZE);
-        int estado,now;
+        int estado, sairAgora = 0;
         /* EOF (end of file) do stdin ou comando "sair" */
-        if (numargs < 0 ||
-            (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
+        if (numargs < 0 || (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
             if (numargs < 2) {
 
-        } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
+            } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
+                sairAgora = 1;
                 for(int i=0;i<numPids;i++){
-                    kill(pids[i].pid,SIGUSR1);
+                    if (kill(pids[i].pid,SIGUSR1) != 0)
+                        printf("%s: Erro ao enviar sinal para o Processo.\n", strcat(COMANDO_SAIR , COMANDO_AGORA));
                 }    
             } else {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SAIR);
                 continue;
             }
+
             for(int i=0;i<numPids;i++){
-                    now = waitpid(pids[i].pid,&estado,0); //0 OK, -1 NOT OK
-                    pids[i].estado=estado;
+                if (waitpid(pids[i].pid,&estado,0) != 0)
+                    printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
+                else
+                    pids[i].estado = estado;
             } 
+
             printf("i-banco vai terminar.\n--\n");
+
             for(int i=0;i<numPids;i++){
                 printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado >= 0) ? "normalmente" : "abruptamente");
             }
+
             printf("--\n");
+            sairAgora = 0;
             exit(EXIT_SUCCESS); 
     
         }
+
         else if (numargs == 0)
             /* Nenhum argumento; ignora e volta a pedir */
             continue;
@@ -152,7 +166,7 @@ int main (int argc, char** argv) {
         } else {
             pid = fork();
             if(pid < 0){
-                printf("Erro");
+                printf("%s: ERRO ao criar processo.ID do fork %d\n",COMANDO_SIMULAR,pid);
                 exit(EXIT_FAILURE);
             } else if (pid == 0) {
                 simular(anos);
@@ -162,8 +176,7 @@ int main (int argc, char** argv) {
             }
         }
         continue;
-    }
-    else {
+    } else {
       printf("Comando desconhecido. Tente de novo.\n");
     }
 

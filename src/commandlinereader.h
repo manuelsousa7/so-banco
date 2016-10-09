@@ -1,7 +1,12 @@
-/*
-// Command line reader (header file), version 1
-// Sistemas Operativos, DEI/IST/ULisboa 2016-17
-*/
+/******************************************************************************************
+* File Name:    commandlinereader.h
+* Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
+* Revision:
+* NAME:         Banco - IST/SO - 2016/2017 1º Semestre
+* SYNOPSIS:     Nenhum
+* DESCRIPTION:  Prototipos das funcoes de leitura dos comandos
+* DIAGNOSTICS:  tested
+*****************************************************************************************/
 
 #ifndef COMMANDLINEREADER_H
 #define COMMANDLINEREADER_H
