@@ -67,36 +67,28 @@ int main (int argc, char** argv) {
         /* EOF (end of file) do stdin ou comando "sair" */
         if (numargs < 0 ||
             (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
-            printf("%s asdasdsa\n\n",args[1]);
-            if (strcmp(args[1], COMANDO_AGORA) == 0) {
-                printf("jahsbdhasbdjsa");
-            } else {
+            if (numargs < 2) {
+
+        } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
                 for(int i=0;i<numPids;i++){
+                    kill(pids[i].pid,SIGUSR1);
+                }    
+            } else {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SAIR);
+                continue;
+            }
+            for(int i=0;i<numPids;i++){
                     now = waitpid(pids[i].pid,&estado,0); //0 OK, -1 NOT OK
                     pids[i].estado=estado;
-                }
-                printf("i-banco vai terminar.\n--\n");
-                for(int i=0;i<numPids;i++){
-                    printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado >= 0) ? "normalmente" : "abruptamente");
-                }
-                printf("--\n");           
-                exit(EXIT_SUCCESS);
-            }
-    
-        }
-        /* 
-        else if (strcmp(args[0], COMANDO_SAIR_AGORA) == 0) {
-            for(int i=0;i<numPids;i++){
-                //kill(pids[i].pid,SIGUSR1);
-                now = waitpid(pids[i].pid,&estado,0); //0 OK, -1 NOT OK
-                pids[i].estado=estado;
-            }
-             printf("i-banco vai terminar.\n--\n");
+            } 
+            printf("i-banco vai terminar.\n--\n");
             for(int i=0;i<numPids;i++){
                 printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado >= 0) ? "normalmente" : "abruptamente");
             }
+            printf("--\n");
+            exit(EXIT_SUCCESS); 
+    
         }
-        */
         else if (numargs == 0)
             /* Nenhum argumento; ignora e volta a pedir */
             continue;
