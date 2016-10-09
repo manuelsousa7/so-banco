@@ -60,9 +60,14 @@ int lerSaldo(int idConta) {
 
 void nope(){
   flag = 1;
-  printf("ABSDNKAS");
 }
 
+void isDead(){
+  if(flag == 1) {
+    printf("Simulacao terminada por signal\n");
+    exit(EXIT_FAILURE);
+  }
+}
 void simular(int numAnos) {
   if (signal(SIGUSR1, nope) == SIG_ERR)
     printf("simular: Não foi possivel tratar do sinal\n");
@@ -73,19 +78,17 @@ void simular(int numAnos) {
     contasSaldosSimular[i] = lerSaldo(i+1);
   }
 
-  if(flag == 1) 
-    exit(EXIT_FAILURE);
+  isDead();
 
   for(int i = 0;i < numAnos;i++){
-    if(flag == 1) 
-      exit(EXIT_FAILURE);
+    isDead();
     printf("SIMULACAO: Ano %d\n=================\n", i);
     for(int ii = 0;ii < NUM_CONTAS;ii++){
-      if(i != 0){
-        if(contasSaldosSimular[ii] != 0){
-          contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
-        }
+      if(i != 0 && contasSaldosSimular[ii] != 0){
+        contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
       }
+      printf("Conta %d, Saldo %d\n",ii+1,contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
+      atrasar();
     }
     printf("\n");
   }      

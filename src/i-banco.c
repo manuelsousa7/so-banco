@@ -8,6 +8,7 @@
                 #include <stdlib.h>  - exit(), atoi()
                 #include <unistd.h> - fork()
                 #include <signal.h> - signal(), kill()
+                #include <errno.h> - 
                 #include <sys/wait.h> - waitpid()
                 #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
                 #include "contas.h" - Prototipos de todas as operações relacionadas com contas
@@ -24,6 +25,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#include <unistd.h>
+#include <errno.h>
 #include <sys/wait.h>
 #include "commandlinereader.h"
 #include "contas.h"
@@ -60,6 +63,7 @@ int main (int argc, char** argv) {
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
     int numPids = 0;
+    pid_t wpid;
     inicializarContas();
 
     printf("Bem-vinda/o ao i-banco\n\n");
@@ -85,10 +89,13 @@ int main (int argc, char** argv) {
             }
 
             for(int i=0;i<numPids;i++){
-                if (waitpid(pids[i].pid,&estado,0) != 0)
+                
+                wpid = waitpid(pids[i].pid,&estado,0);
+                if(errno == ECHILD || errno == EINTR || errno == EINVAL)
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                else
-                    pids[i].estado = estado;
+                if(WIFSIGNALED(estado))
+                    printf("Simulacao terminada por signal\n");
+                pids[i].estado = estado;
             } 
 
             printf("i-banco vai terminar.\n--\n");
@@ -182,4 +189,3 @@ int main (int argc, char** argv) {
 
   } 
 }
-
