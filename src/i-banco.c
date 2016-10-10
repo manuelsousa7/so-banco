@@ -49,7 +49,6 @@
 typedef struct PID{
     pid_t pid;
     int estado;
-    int signal;
 }pids;
 
 /******************************************************************************************
@@ -97,23 +96,14 @@ int main (int argc, char** argv) {
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
                 if(WIFEXITED(estado) != 0){
                     if(WEXITSTATUS(estado) == EXIT_FAILURE)
-                        pids[i].signal = 1;
-                    else
-                        pids[i].signal = 0;
+                        printf("Simulacao terminada por signal\n");
                 }
                 pids[i].estado = WIFEXITED(estado) ? 1 : -1;
             } 
-            for(int i=0;i<numPids;i++){
-                if(pids[i].signal == 1){
-                    printf("Simulacao terminada por signal\n");
-                }
-            }
             printf("i-banco vai terminar.\n--\n");
-
             for(int i=0;i<numPids;i++){
-                printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado >= 0) ? "normalmente" : "abruptamente");
+                printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado > 0) ? "normalmente" : "abruptamente");
             }
-
             printf("--\n");
             sairAgora = 0;
             exit(EXIT_SUCCESS); 
