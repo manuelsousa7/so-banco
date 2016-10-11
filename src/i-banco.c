@@ -59,11 +59,9 @@ typedef struct PID{
 * Description:  Leitura dos comandos do banco e criação de de processos nas simulações
 *****************************************************************************************/
 int main (int argc, char** argv) {
-
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
     int numPids = 0;
-    //pid_t wpid;
     inicializarContas();
 
     printf("Bem-vinda/o ao i-banco\n\n");
@@ -73,14 +71,16 @@ int main (int argc, char** argv) {
         pids pids[MAXCHILDS];
         numargs = readLineArguments(args, MAXARGS+1, buffer, BUFFER_SIZE);
         int estado, sairAgora = 0;
-        /* EOF (end of file) do stdin ou comando "sair" */
+        /* EOF (end of file) do stdin ou comando "sair" + "sair agora"*/
         if (numargs < 0 || (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
             if (numargs < 2) {
 
+            /* Sair Agora */    
             } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
                 sairAgora = 1;
-                for(int i=0;i<numPids;i++){
-                    if (kill(pids[i].pid,SIGUSR1) != 0)
+                //Ciclo que vai enviar um sinal individualmente para cada Processo Filho
+                for(int i = 0; i < numPids; i++){
+                    if (kill(pids[i].pid, SIGUSR1) != 0) //Verifica se ocorreu um erro ao enviar um Sinal
                         printf("%s: Erro ao enviar sinal para o Processo.\n", strcat(COMANDO_SAIR , COMANDO_AGORA));
                 }    
             } else {
@@ -88,22 +88,22 @@ int main (int argc, char** argv) {
                 continue;
             }
 
+            /* Ciclo que vai terminar todos os Processos Filho */    
             for(int i=0;i<numPids;i++){
                 
-                if(waitpid(pids[i].pid,&estado,0) == -1)
+                if(waitpid(pids[i].pid,&estado,0) == -1) //Terminar Processo filho. Se ocorrer um erro vai cair no if statment
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                if(errno == ECHILD || errno == EINTR || errno == EINVAL)
+                if(errno == ECHILD || errno == EINTR || errno == EINVAL) //Se ocorreu algum erro dos errno
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                if(WIFEXITED(estado) != 0){
-                    if(WEXITSTATUS(estado) == 2)
+                if(WIFEXITED(estado) != 0){//Se o processo com um exit corretamente (de que maneira for)
+                    if(WEXITSTATUS(estado) == 2) //Vamos verificar se o exit retornou o termino por signal
                         printf("Simulacao terminada por signal\n");
-                }
+                } 
                 pids[i].estado = WIFEXITED(estado) ? 1 : -1;
-
             } 
             printf("i-banco vai terminar.\n--\n");
-            for(int i=0;i<numPids;i++){
-                printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid,(pids[i].estado > 0) ? "normalmente" : "abruptamente");
+            for(int i = 0; i < numPids; i++){
+                printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid, (pids[i].estado > 0) ? "normalmente" : "abruptamente");
             }
             printf("--\n");
             sairAgora = 0;
@@ -173,14 +173,15 @@ int main (int argc, char** argv) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
         } else {
             pid = fork();
-            if(pid < 0){
+            if(pid < 0){ // Erro ao fazer fork do processo PAI
                 printf("%s: ERRO ao criar processo.ID do fork %d\n",COMANDO_SIMULAR,pid);
                 exit(EXIT_FAILURE);
-            } else if (pid == 0) {
+            } else if (pid == 0) { //Criou Processo filho com sucesso
                 simular(anos);
                 exit(EXIT_SUCCESS);
-            } else if (pid > 0){
-                pids[numPids++].pid = pid;
+            } else if (pid > 0){ // Processo PAI
+                printf("%d\n",pid);
+                pids[numPids++].pid = pid; //Vamos guardar todos o PID de todos os processos filho que forem criados
             }
         }
         continue;

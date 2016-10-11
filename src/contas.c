@@ -59,38 +59,67 @@ int lerSaldo(int idConta) {
   return contasSaldos[idConta - 1];
 }
 
-void nope(){
+
+/******************************************************************************************
+* handler()
+*
+* Arguments:  Nenhum
+*
+* Returns: void
+* Description:  Altera a variavel global (flag) para o valor 1. Indica que recebeu um Sinal!
+*****************************************************************************************/
+void handler(){
   flag = 1;
 }
 
+/******************************************************************************************
+* simular()
+*
+* Arguments:  Nenhum
+*
+* Returns: void
+* Description:  Verifica se a variavel global (flag) foi alterada pela funcão [handler]
+                Se foi alterada, então houve um sinal
+*****************************************************************************************/
 void isDead(){
   if(flag == 1) {
-    //printf("Simulaaaaacao terminada por signal\n");
-    exit(2);
+    exit(2); //Houve Signal
   }
 }
+
+/******************************************************************************************
+* simular()
+*
+* Arguments:  numAnos:  numero de anos para correr a simulacao
+*
+* Returns: void
+* Description:  Faz uma simulacao (juros) de um numero de anos de todas as contas do banco
+*****************************************************************************************/
 void simular(int numAnos) {
-  if (signal(SIGUSR1, nope) == SIG_ERR)
+  /* Se houver um problema a tratar do Signal vai ocorrer um erro*/
+  if (signal(SIGUSR1, handler) == SIG_ERR){
     printf("simular: Não foi possivel tratar do sinal\n");
+    exit(EXIT_FAILURE);
+  }
+
   
   int contasSaldosSimular[NUM_CONTAS];
-
+  //Copia dos saldos das contas
   for(int i = 0;i < NUM_CONTAS;i++){
     contasSaldosSimular[i] = lerSaldo(i+1);
   }
 
-  isDead();
+  isDead(); //Verifica se ocorreu um sinal
 
-  for(int i = 0;i <=numAnos;i++){
+  for(int i = 0; i <= numAnos; i++){
     printf("SIMULACAO: Ano %d\n=================\n", i);
-    for(int ii = 0;ii <NUM_CONTAS;ii++){
+    for(int ii = 0; ii < NUM_CONTAS; ii++){
       if(i != 0 && contasSaldosSimular[ii] != 0){
         contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
       }
-      printf("Conta %d, Saldo %d\n",ii+1,contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
-      //atrasar();
+      printf("Conta %d, Saldo %d\n", ii+1, contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
     }
-    isDead();
+    isDead(); //Verifica se ocorreu um sinal
     printf("\n");
   }
   exit(1);    
