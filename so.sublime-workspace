@@ -4,6 +4,50 @@
 		"selected_items":
 		[
 			[
+				"EXIT",
+				"EXIT_SUCCESS"
+			],
+			[
+				"pid",
+				"pids"
+			],
+			[
+				"num",
+				"numPids"
+			],
+			[
+				"E",
+				"EXIT_SUCCESS"
+			],
+			[
+				"EX",
+				"EXIT_FAILURE"
+			],
+			[
+				"sair",
+				"sairAgora"
+			],
+			[
+				"CO",
+				"COMANDO_SAIR"
+			],
+			[
+				"COMANDO_SA",
+				"COMANDO_SAIR_AGORA"
+			],
+			[
+				"contas",
+				"contasSaldosSimular"
+			],
+			[
+				"cont",
+				"contasSaldos"
+			],
+			[
+				"Pid",
+				"pidTerminou"
+			],
+			[
 				"de",
 				"deleteProject"
 			],
@@ -27,60 +71,6 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "src/contas.c",
-			"settings":
-			{
-				"buffer_size": 881,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/contas.h",
-			"settings":
-			{
-				"buffer_size": 408,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/i-banco.c",
-			"settings":
-			{
-				"buffer_size": 2996,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "#include <stdio.h>\n#include <unistd.h>\n\nvoid simula(){\n\tint pid;\t\n\tpid=fork();\n\tif(pid<0){\n\t\tprintf(\"Erro\");\n\t}\n\tif (pid ==0) {\n\t\tprintf(\"FILHO\\n\");\n\t} else if (pid>0){\n\t\tprintf(\"PAI\\n\");\n\t}\n}\n\nint main(){\n\twhile(1){\n\t\tprintf(\"asbdhsadgsa\\n\");\n\t\tsimula();\n\t}\n\treturn 0;\n}",
-			"file": "teste.c",
-			"file_size": 270,
-			"file_write_time": 131199846540000000,
-			"settings":
-			{
-				"buffer_size": 271,
-				"encoding": "UTF-8",
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/commandlinereader.h",
-			"settings":
-			{
-				"buffer_size": 949,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "src/commandlinereader.c",
-			"settings":
-			{
-				"buffer_size": 1513,
-				"line_ending": "Unix"
-			}
-		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -115,17 +105,22 @@
 	"expanded_folders":
 	[
 		"/Users/mvs/repo/so-bancos/docs",
+		"/Users/mvs/repo/so-bancos/docs/parte1",
 		"/Users/mvs/repo/so-bancos/src"
 	],
 	"file_history":
 	[
+		"/Users/mvs/repo/so-bancos/src/contas.h",
+		"/Users/mvs/repo/so-bancos/src/commandlinereader.h",
+		"/Users/mvs/repo/so-bancos/src/contas.c",
+		"/Users/mvs/repo/so-bancos/src/i-banco.c",
+		"/Users/mvs/repo/so-bancos/docs/parte1/i-banco.c",
+		"/Users/mvs/repo/so-bancos/src/t.c",
+		"/Users/mvs/repo/so-bancos/src/i-banco",
+		"/Users/mvs/repo/so-bancos/src/commandlinereader.c",
+		"/Users/mvs/repo/so-bancos/teste.c",
 		"/Users/mvs/repo/so-bancos/*.c",
 		"/Users/mvs/repo/so-bancos/src/Makefile",
-		"/Users/mvs/repo/so-bancos/src/i-banco.c",
-		"/Users/mvs/repo/so-bancos/src/contas.h",
-		"/Users/mvs/repo/so-bancos/src/contas.c",
-		"/Users/mvs/repo/so-bancos/src/commandlinereader.c",
-		"/Users/mvs/repo/so-bancos/src/commandlinereader.h",
 		"/Volumes/SD/Downloads/exercicio1-base/i-banco.c",
 		"/Volumes/SD/Downloads/exercicio1-base/contas.h",
 		"/Volumes/SD/Downloads/exercicio1-base/contas.c",
@@ -146,7 +141,7 @@
 	],
 	"find":
 	{
-		"height": 25.0
+		"height": 35.0
 	},
 	"find_in_files":
 	{
@@ -160,6 +155,14 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"simulacao",
+			"argv",
+			"now",
+			"flag",
+			"signal",
+			"SIG",
+			"sair",
+			"COMANDO_SA",
 			"fork"
 		],
 		"highlight": true,
@@ -178,183 +181,8 @@
 	"groups":
 	[
 		{
-			"selected": 3,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "src/contas.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 881,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "src/contas.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 408,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "src/i-banco.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2996,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2854,
-								2829
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 996.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "teste.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 271,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								65,
-								65
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "src/commandlinereader.h",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 949,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C++.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "src/commandlinereader.c",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1513,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								142,
-								142
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/C++/C.sublime-syntax",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 27.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				}
 			]
 		}
 	],

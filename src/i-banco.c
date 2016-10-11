@@ -95,10 +95,11 @@ int main (int argc, char** argv) {
                 if(errno == ECHILD || errno == EINTR || errno == EINVAL)
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
                 if(WIFEXITED(estado) != 0){
-                    if(WEXITSTATUS(estado) == EXIT_FAILURE)
+                    if(WEXITSTATUS(estado) == 2)
                         printf("Simulacao terminada por signal\n");
                 }
                 pids[i].estado = WIFEXITED(estado) ? 1 : -1;
+
             } 
             printf("i-banco vai terminar.\n--\n");
             for(int i=0;i<numPids;i++){
@@ -165,10 +166,10 @@ int main (int argc, char** argv) {
     }
 
     /* Simular */
-    else if (strcmp(args[0], COMANDO_SIMULAR) == 0) {
+    else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {
         int anos;
         pid_t pid;
-        if ((anos = atoi(args[1])) < 0){
+        if ((anos = atoi(args[1])) <= 0){
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
         } else {
             pid = fork();

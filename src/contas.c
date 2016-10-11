@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <signal.h>
 #include "contas.h"
 
 #define atrasar() sleep(ATRASO)
@@ -65,7 +66,7 @@ void nope(){
 void isDead(){
   if(flag == 1) {
     //printf("Simulaaaaacao terminada por signal\n");
-    exit(EXIT_FAILURE);
+    exit(2);
   }
 }
 void simular(int numAnos) {
@@ -80,9 +81,9 @@ void simular(int numAnos) {
 
   isDead();
 
-  for(int i = 0;i < numAnos;i++){
+  for(int i = 0;i <=numAnos;i++){
     printf("SIMULACAO: Ano %d\n=================\n", i);
-    for(int ii = 0;ii < NUM_CONTAS;ii++){
+    for(int ii = 0;ii <NUM_CONTAS;ii++){
       if(i != 0 && contasSaldosSimular[ii] != 0){
         contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
       }
@@ -91,5 +92,6 @@ void simular(int numAnos) {
     }
     isDead();
     printf("\n");
-  }    
+  }
+  exit(1);    
 }
