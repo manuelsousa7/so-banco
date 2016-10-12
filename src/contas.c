@@ -21,7 +21,7 @@
 		     
 int contasSaldos[NUM_CONTAS];
 
-int flag = -1;
+int flag = -1; //Flag que vai ser usada para tratamento de signals
 
 int contaExiste(int idConta) {
   return (idConta > 0 && idConta <= NUM_CONTAS);
