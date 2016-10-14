@@ -54,7 +54,7 @@ typedef struct PID{
 *
 * Arguments:    Nenhum
 * Returns: int  0
-* Description:  Leitura dos comandos do banco e criação de de processos nas simulações
+* Description:  Leitura dos comandos do banco e criação de processos nas simulações
 *****************************************************************************************/
 int main (int argc, char** argv) {
     char *args[MAXARGS + 1];
@@ -69,7 +69,7 @@ int main (int argc, char** argv) {
         pids pids[MAXCHILDS];
         numargs = readLineArguments(args, MAXARGS+1, buffer, BUFFER_SIZE);
         int estado, sairAgora = 0;
-        /* EOF (end of file) do stdin ou comando "sair" + "sair agora"*/
+        /* EOF (end of file) do stdin ou comando "sair" , "sair agora"*/
         if (numargs < 0 || (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
             if (numargs < 2) {
 
