@@ -31,3 +31,10 @@
 # Debug files
 *.dSYM/
 *.su
+
+#sublime
+*.sublime-workspace
+*.sublime-project
+
+#mac
+.DS_Store
