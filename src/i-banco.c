@@ -8,7 +8,6 @@
                 #include <stdlib.h>  - exit(), atoi()
                 #include <unistd.h> - fork()
                 #include <signal.h> - signal(), kill()
-                #include <errno.h> - 
                 #include <sys/wait.h> - waitpid()
                 #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
                 #include "contas.h" - Prototipos de todas as operações relacionadas com contas
@@ -26,7 +25,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <unistd.h>
-#include <errno.h>
 #include <sys/wait.h>
 #include "commandlinereader.h"
 #include "contas.h"
@@ -93,9 +91,7 @@ int main (int argc, char** argv) {
                 
                 if(waitpid(pids[i].pid,&estado,0) == -1) //Terminar Processo filho. Se ocorrer um erro vai cair no if statment
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                if(errno == ECHILD || errno == EINTR || errno == EINVAL) //Se ocorreu algum erro dos errno
-                    printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                if(WIFEXITED(estado) != 0){//Se o processo com um exit corretamente (de que maneira for)
+                if(WIFEXITED(estado) != 0){ //Se o processo sair com um exit corretamente (de que maneira for)
                     if(WEXITSTATUS(estado) == 2) //Vamos verificar se o exit retornou o termino por signal
                         printf("Simulacao terminada por signal\n");
                 } 
@@ -180,8 +176,7 @@ int main (int argc, char** argv) {
                 simular(anos);
                 exit(EXIT_SUCCESS);
             } else if (pid > 0){ // Processo PAI
-                printf("%d\n",pid);
-                pids[numPids++].pid = pid; //Vamos guardar todos o PID de todos os processos filho que forem criados
+                pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
             }
         }
         continue;
