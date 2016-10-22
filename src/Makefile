@@ -1,5 +1,4 @@
-TARGET = main
-LIBS = -lm
+TARGET = i-banco
 CC = gcc
 CFLAGS = -g -Wall -pedantic
 
