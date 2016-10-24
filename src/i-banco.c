@@ -26,11 +26,11 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <semaphore.h>
 #include "commandlinereader.h"
 #include "contas.h"
 #include "pool.h"
 #include "buffer.h"
+
 
 /* Macros - Comandos */
 #define COMANDO_DEBITAR "debitar"
@@ -41,12 +41,15 @@
 #define COMANDO_AGORA "agora"
 
 /* Operações - Comandos */
-#define OP_LERSALDO 0
-#define OP_CREDITAR 1
-#define OP_DEBITAR 2
+#define OP_SAIR 0
+#define OP_SAIRAGORA 1
+#define OP_LERSALDO 2
+#define OP_CREDITAR 3
+#define OP_DEBITAR 4
 
 /*Constantes*/
 #define MAXARGS 3
+#define BUFFER_SIZE 100
 #define MAXCHILDS 20
 
 /*Estruturas*/
@@ -56,7 +59,6 @@ typedef struct PID{
     int estado;
 }pids;
 
-int topo = BUFFER_SIZE-1;
 
 /******************************************************************************************
 * main()
@@ -68,20 +70,13 @@ int topo = BUFFER_SIZE-1;
 int main (int argc, char** argv) {
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
-    comando_t cmd_buffer[CMD_BUFFER_DIM];
-
-
-    pthread_mutex_init(&semExtMut,NULL);
-
-    sem_init(&semBuffer,0,0);
-
-
     int numPids = 0;
+    sem_t semaforos[NUM_CONTAS];
     inicializarContas();
     inicializarThreads();
 
     printf("Bem-vinda/o ao i-banco\n\n");
-      
+    
     while (1) {
         int numargs;
         pids pids[MAXCHILDS];
@@ -121,56 +116,51 @@ int main (int argc, char** argv) {
             }
             printf("--\n");
             sairAgora = 0;
-
-            pthread_mutex_destroy(&semExtMut);
-            sem_destroy(&posicoesComInfo);
-            sem_destroy(&posicoesSemInfo);
             exit(EXIT_SUCCESS); 
     
         }
-
     else if (numargs == 0)
         /* Nenhum argumento; ignora e volta a pedir */
         continue;
             
     /* Debitar */
     else if (strcmp(args[0], COMANDO_DEBITAR) == 0) {
-        int idConta, valor;
         if (numargs < 3) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
             continue;
         }
-
-        idConta = atoi(args[1]);
-        valor = atoi(args[2]);
-        changeBuffer(cmd_buffer,idConta,valor,OP_CREDITAR,&buff_write_idx);
+        sem_wait(&podeProd);
+        pthread_mutex_lock(&semExMut);
+        changeBuffer(atoi(args[1]),atoi(args[2]),OP_DEBITAR);
+        pthread_mutex_unlock(&semExMut);
+        sem_post(&podeCons);
     }
 
     /* Creditar */
     else if (strcmp(args[0], COMANDO_CREDITAR) == 0) {
-        int idConta, valor;
         if (numargs < 3) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_CREDITAR);
             continue;
         }
-
-        idConta = atoi(args[1]);
-        valor = atoi(args[2]);
-
-        changeBuffer(cmd_buffer,idConta,valor,OP_CREDITAR,&buff_write_idx);
+        sem_wait(&podeProd);
+        pthread_mutex_lock(&semExMut);
+        changeBuffer(atoi(args[1]),atoi(args[2]),OP_CREDITAR);
+        pthread_mutex_unlock(&semExMut);
+        sem_post(&podeCons);
     }
 
     /* Ler Saldo */
     else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
-        int idConta, saldo;
 
         if (numargs < 2) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
             continue;
         }
-        idConta = atoi(args[1]);
-        saldo = lerSaldo (idConta);
-        changeBuffer(cmd_buffer,idConta,-1,OP_CREDITAR,&buff_write_idx);
+        sem_wait(&podeProd);
+        pthread_mutex_lock(&semExMut);
+        changeBuffer(atoi(args[1]),0,OP_LERSALDO);
+        pthread_mutex_unlock(&semExMut);
+        sem_post(&podeCons);
     }
 
     /* Simular */

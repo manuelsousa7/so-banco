@@ -11,6 +11,10 @@
 #ifndef POOL_H
 #define POOL_H
 
+#include <pthread.h>
+#include <semaphore.h>
+
+#define BUFFER_SIZE 100
 #define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 

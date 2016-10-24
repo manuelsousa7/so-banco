@@ -11,9 +11,6 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-#define BUFFER_SIZE 100
-
-
 typedef struct{
 	int operacao;
 	int idConta;
@@ -22,7 +19,8 @@ typedef struct{
 
 int buff_write_idx = 0, buff_read_idx = 0;
 
-void changeBuffer(comando_t cmd_buffer[], int idConta, int valor, int OP, int *index);
-comando_t getRequest(comando_t cmd_buffer[], int *index);
+comando_t cmd_buffer[CMD_BUFFER_DIM];
+
+void changeBuffer(int idConta, int valor, int OP);
 
 #endif

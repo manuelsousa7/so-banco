@@ -12,21 +12,13 @@
 *****************************************************************************************/
 
 #include <stdio.h>
+#include "pool.h"
 #include "buffer.h"
 
 
-void changeBuffer(comando_t cmd_buffer[], int idConta, int valor, int OP, int *index){
-    cmd_buffer[*index].operacao = OP;
-    cmd_buffer[*index].valor = valor < 0 ? cmd_buffer[*index].valor : valor;
-    cmd_buffer[*index].idConta = idConta;
-    if(((*index) + 1) == BUFFER_SIZE)
-    	*index = 0;
-    else
-    	(*index)++; 
-}
-
-comando_t getRequest(comando_t cmd_buffer[], int *index){
-	comando_t temp = cmd_buffer[*index];
-	(*index)++;
-	return temp; 
+void changeBuffer(int idConta, int valor, int OP){
+    cmd_buffer[buff_write_idx].operacao = OP;
+    cmd_buffer[buff_write_idx].valor = valor;
+    cmd_buffer[buff_write_idx].idConta = idConta;
+    buff_write_idx = (buff_write_idx+1) % BUFFER_SIZE2;
 }

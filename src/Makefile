@@ -1,6 +1,6 @@
 TARGET = i-banco
 CC = gcc
-CFLAGS = -g -Wall -pedantic
+CFLAGS = -g -Wall -pedantic -pthread -lpthread
 
 .PHONY: default all clean
 
