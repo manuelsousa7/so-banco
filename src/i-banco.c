@@ -40,17 +40,16 @@
 #define COMANDO_AGORA "agora"
 
 /* Operações - Comandos */
-#define OP_SAIR 0
-#define OP_SAIRAGORA 1
-#define OP_LERSALDO 2
-#define OP_CREDITAR 3
-#define OP_DEBITAR 4
+#define OP_SAIR 1
+#define OP_SAIRAGORA 2
+#define OP_LERSALDO 3
+#define OP_CREDITAR 4
+#define OP_DEBITAR 5
 
 /*Constantes*/
 #define MAXARGS 3
 #define BUFFER_SIZE 100
 #define MAXCHILDS 20
-#define NUM_CONTAS 10
 #define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
@@ -75,17 +74,6 @@ sem_t podeProd,podeCons;
 int buff_write_idx = 0, buff_read_idx = 0;
 
 comando_t cmd_buffer[CMD_BUFFER_DIM];
-
-
-void writeBuffer(int idConta, int valor, int OP){
-    cmd_buffer[buff_write_idx].operacao = OP;
-    cmd_buffer[buff_write_idx].valor = valor;
-    cmd_buffer[buff_write_idx].idConta = idConta;
-    buff_write_idx = (buff_write_idx+1) % CMD_BUFFER_DIM;
-}
-
-
-
 
 void executarComando(comando_t c){
     switch (c.operacao) {
@@ -123,14 +111,16 @@ void executarComando(comando_t c){
             break;
         case OP_SAIR:
             //something
+            printf("fodasse");
             exit(EXIT_SUCCESS);
             break;
         case OP_SAIRAGORA:
             //something
+            printf("fodasse");
             exit(EXIT_SUCCESS);
             break;
         default:
-            printf("oiix");
+            
             break;
     }
 
@@ -168,6 +158,17 @@ void killThreads(){
     }
 }
 
+void produtor(int idConta, int valor, int OP){
+    sem_wait(&podeProd);
+    pthread_mutex_lock(&semExMut);
+    cmd_buffer[buff_write_idx].operacao = OP;
+    cmd_buffer[buff_write_idx].valor = valor;
+    cmd_buffer[buff_write_idx].idConta = idConta;
+    buff_write_idx = (buff_write_idx+1) % CMD_BUFFER_DIM;
+    pthread_mutex_unlock(&semExMut);
+    sem_post(&podeCons);
+}
+
 /******************************************************************************************
 * main()
 *
@@ -179,6 +180,8 @@ int main (int argc, char** argv) {
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
     int numPids = 0;
+    sem_init(&podeProd, 0, NUM_CONTAS);
+    sem_init(&podeCons, 0, 0);
     inicializarContas();
     inicializarThreads();
 
@@ -187,10 +190,11 @@ int main (int argc, char** argv) {
     while (1) {
         int numargs;
         pids pids[MAXCHILDS];
-        numargs = readLineArguments(args, MAXARGS+1, buffer, BUFFER_SIZE);
+        numargs = readLineArguments(args, MAXARGS+1, buffer, CMD_BUFFER_DIM);
         int estado, sairAgora = 0;
         /* EOF (end of file) do stdin ou comando "sair" , "sair agora"*/
         if (numargs < 0 || (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
+            printf("how");
             if (numargs < 2) {
 
             /* Sair Agora */    
@@ -237,11 +241,7 @@ int main (int argc, char** argv) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
             continue;
         }
-        sem_wait(&podeProd);
-        pthread_mutex_lock(&semExMut);
-        writeBuffer(atoi(args[1]),atoi(args[2]),OP_DEBITAR);
-        pthread_mutex_unlock(&semExMut);
-        sem_post(&podeCons);
+        produtor(atoi(args[1]),atoi(args[2]),OP_DEBITAR);
     }
 
     /* Creditar */
@@ -250,11 +250,7 @@ int main (int argc, char** argv) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_CREDITAR);
             continue;
         }
-        sem_wait(&podeProd);
-        pthread_mutex_lock(&semExMut);
-        writeBuffer(atoi(args[1]),atoi(args[2]),OP_CREDITAR);
-        pthread_mutex_unlock(&semExMut);
-        sem_post(&podeCons);
+        produtor(atoi(args[1]),atoi(args[2]),OP_CREDITAR);
     }
 
     /* Ler Saldo */
@@ -264,11 +260,7 @@ int main (int argc, char** argv) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
             continue;
         }
-        sem_wait(&podeProd);
-        pthread_mutex_lock(&semExMut);
-        writeBuffer(atoi(args[1]),0,OP_LERSALDO);
-        pthread_mutex_unlock(&semExMut);
-        sem_post(&podeCons);
+        produtor(atoi(args[1]),0,OP_LERSALDO);
     }
 
     /* Simular */
