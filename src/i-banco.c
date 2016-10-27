@@ -50,7 +50,7 @@
 #define MAXARGS 3
 #define BUFFER_SIZE 100
 #define MAXCHILDS 20
-#define NUM_TRABALHADORAS 3
+#define NUM_TRABALHADORAS 2
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 
@@ -58,7 +58,6 @@ typedef struct PID{
     pid_t pid;
     int estado;
 }pids;
-
 
 
 typedef struct{
@@ -79,8 +78,9 @@ void executarComando(comando_t c){
     switch (c.operacao) {
         case OP_LERSALDO:
             pthread_mutex_lock(&threadsContas[c.idConta]);
-            printf("OP_LERSALDO\n");
-            int saldo = saldo = lerSaldo (c.idConta);
+            //printf("OP_LERSALDO %d\n",pthread_self() == tid[0]);
+            int saldo = lerSaldo (c.idConta);
+            //sleep(10);
             if (lerSaldo(c.idConta) < 0)
                 printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
             else
@@ -90,6 +90,7 @@ void executarComando(comando_t c){
 
         case OP_CREDITAR:
             pthread_mutex_lock(&threadsContas[c.idConta]);
+            //printf("OP_CREDITAR %d\n",pthread_self() == tid[0]);
             if (creditar (c.idConta, c.valor) < 0)
                 printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
             else
@@ -100,7 +101,7 @@ void executarComando(comando_t c){
 
         case OP_DEBITAR:
             pthread_mutex_lock(&threadsContas[c.idConta]);
-            printf("OP_DEBITAR\n");
+            //printf("OP_DEBITAR %d\n",pthread_self() == tid[0]);
             if (debitar (c.idConta, c.valor) < 0)
                printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
             else
@@ -109,13 +110,7 @@ void executarComando(comando_t c){
             pthread_mutex_unlock(&threadsContas[c.idConta]);
             break;
         case OP_SAIR:
-            //something
-            printf("fodasse");
-            exit(EXIT_SUCCESS);
-            break;
-        case OP_SAIRAGORA:
-            //something
-            printf("fodasse");
+            pthread_exit(NULL);
             exit(EXIT_SUCCESS);
             break;
         default:
@@ -142,18 +137,8 @@ void inicializarThreads(){
         int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL);
         if (err != 0)
             printf("Falha ao criar Thread :[%s]\n", strerror(err));
-        else
-            printf("Thread criado com sucesso\n");
-    }
-}
-
-void killThreads(){
-    for(int i = 0; i < NUM_TRABALHADORAS ; i++){
-        int err = pthread_join(tid[i], NULL);
-        if (err != 0)
-            printf("Falha ao criar Thread :[%s]\n", strerror(err));
-        else
-            printf("Thread morto com sucesso\n");
+        //else
+        //    printf("Thread criado com sucesso\n");
     }
 }
 
@@ -167,6 +152,20 @@ void produtor(int idConta, int valor, int OP){
     pthread_mutex_unlock(&semExMut);
     sem_post(&podeCons);
 }
+void killThreads(){
+    for(int i = 0; i < NUM_TRABALHADORAS ; i++){
+        produtor(0,0,OP_SAIR);
+    }
+
+    for(int i = 0; i < NUM_TRABALHADORAS ; i++){
+        int err = pthread_join(tid[i], NULL);
+        if (err != 0)
+            printf("Falha ao criar Thread :[%s]\n", strerror(err));
+        //else
+        //    printf("Thread morto com sucesso\n");
+    }
+}
+
 
 /******************************************************************************************
 * main()
@@ -207,6 +206,9 @@ int main (int argc, char** argv) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SAIR);
                 continue;
             }
+
+            /* Vai terminar e sincronizar todas as tarefas do sistema */    
+            killThreads();
 
             /* Ciclo que vai terminar todos os Processos Filho */    
             for(int i=0;i<numPids;i++){

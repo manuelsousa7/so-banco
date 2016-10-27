@@ -1,7 +1,7 @@
 TARGET = i-banco
 CC = gcc
-CFLAGS = -g -Wall -pedantic -pthread -lpthread
-
+CFLAGS = -g -Wall -pedantic -pthread
+LDFLAGS=-lpthread
 .PHONY: default all clean
 
 default: $(TARGET)
@@ -16,7 +16,7 @@ HEADERS = $(wildcard *.h)
 .PRECIOUS: $(TARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 clean:
 	-rm -f *.o
