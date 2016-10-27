@@ -80,17 +80,16 @@ void executarComando(comando_t c){
         case OP_LERSALDO:
             pthread_mutex_lock(&threadsContas[c.idConta]);
             printf("OP_LERSALDO\n");
+            int saldo = saldo = lerSaldo (c.idConta);
             if (lerSaldo(c.idConta) < 0)
                 printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
             else
-                printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, c.valor);
-            
+                printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, saldo);
             pthread_mutex_unlock(&threadsContas[c.idConta]);
             break;
 
         case OP_CREDITAR:
             pthread_mutex_lock(&threadsContas[c.idConta]);
-            printf("OP_CREDITAR\n");
             if (creditar (c.idConta, c.valor) < 0)
                 printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
             else
