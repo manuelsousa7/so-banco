@@ -4,7 +4,7 @@
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     #include "parte2.h" - Prototipos e Estruturas usadas na entrega 2 (tarefas)
-* DESCRIPTION:  Contem todas as funções relativas à parte2 do projeto sobre tarefas, 
+* DESCRIPTION:  Contem todas as funções relativas à parte2 do projeto sobre tarefas,
 *               sistema Produtor - Consumidor e buffer circular de comandos
 * DIAGNOSTICS:  tested
 *****************************************************************************************/
@@ -25,13 +25,13 @@ void executarComando(comando_t c){
             if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0){
 	    		printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
 	    	}
-            
+
             int saldo = lerSaldo (c.idConta);
             if (lerSaldo(c.idConta) < 0)
                 printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
             else
                 printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, saldo);
-            
+
             if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0){
 	    		printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
 	    	}
@@ -41,7 +41,7 @@ void executarComando(comando_t c){
             if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0){
 	    		printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
 	    	}
-	    	
+
             if (creditar (c.idConta, c.valor) < 0)
                 printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
             else
@@ -65,14 +65,14 @@ void executarComando(comando_t c){
             if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0){
 	    		printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
 	    	}
-            
+
             break;
         case OP_SAIR:
             pthread_exit(NULL); //Termina tarefa - ESTA FUNCAO TEM SEMPRE SUCESSO
             exit(EXIT_SUCCESS);
             break;
         default:
-            
+
             break;
     }
 
@@ -109,7 +109,7 @@ void *lerComandos(void *args){
 	    	printf("ERRO: sem_post - &podeProd\n");
 	    }
         /* Após adquirir o comando a executar do buffer circular de dados, vamos executa-lo */
-        executarComando(consumido); 
+        executarComando(consumido);
     }
 }
 
@@ -199,10 +199,10 @@ void killThreadsSemaforos(){
     /* Destroi Semáforos */
     if (sem_destroy(&podeProd) != 0){
     	printf("Erro ao destruir semaforo podeProd\n");
-    } 
+    }
     if (sem_destroy(&podeCons) != 0){
     	printf("Erro ao destruir semaforo podeProd\n");
-    } 
+    }
 }
 
 

@@ -47,7 +47,7 @@ int main (int argc, char** argv) {
     inicializarThreadsSemaforos();
 
     printf("Bem-vinda/o ao i-banco\n\n");
-    
+
     while (1) {
         int numargs;
         pids pids[MAXCHILDS];
@@ -57,47 +57,47 @@ int main (int argc, char** argv) {
         if (numargs < 0 || (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
             if (numargs < 2) {
 
-            /* Sair Agora */    
+            /* Sair Agora */
             } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
                 sairAgora = 1;
                 //Ciclo que vai enviar um sinal individualmente para cada Processo Filho
                 for(int i = 0; i < numPids; i++){
                     if (kill(pids[i].pid, SIGUSR1) != 0) //Verifica se ocorreu um erro ao enviar um Sinal
                         printf("%s: Erro ao enviar sinal para o Processo.\n", strcat(COMANDO_SAIR , COMANDO_AGORA));
-                }    
+                }
             } else {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SAIR);
                 continue;
             }
 
-            /* Vai terminar e sincronizar todas as tarefas do sistema */    
+            /* Vai terminar e sincronizar todas as tarefas do sistema */
             killThreadsSemaforos();
 
-            /* Ciclo que vai terminar todos os Processos Filho */    
+            /* Ciclo que vai terminar todos os Processos Filho */
             for(int i=0;i<numPids;i++){
-                
+
                 if(waitpid(pids[i].pid,&estado,0) == -1) //Terminar Processo filho. Se ocorrer um erro vai cair no if statment
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
                 if(WIFEXITED(estado) != 0){ //Se o processo sair com um exit corretamente (de que maneira for)
                     if(WEXITSTATUS(estado) == 2) //Vamos verificar se o exit retornou o termino por signal
                         printf("Simulacao terminada por signal\n");
-                } 
+                }
                 pids[i].estado = WIFEXITED(estado) ? 1 : -1;
-            } 
+            }
             printf("i-banco vai terminar.\n--\n");
             for(int i = 0; i < numPids; i++){
                 printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid, (pids[i].estado > 0) ? "normalmente" : "abruptamente");
             }
             printf("--\n");
             sairAgora = 0;
-            exit(EXIT_SUCCESS); 
-    
+            exit(EXIT_SUCCESS);
+
         }
 
         else if (numargs == 0)
             /* Nenhum argumento; ignora e volta a pedir */
             continue;
-            
+
         /* Debitar */
         else if (strcmp(args[0], COMANDO_DEBITAR) == 0) {
             //int idConta, valor;
@@ -154,5 +154,5 @@ int main (int argc, char** argv) {
       printf("Comando desconhecido. Tente de novo.\n");
     }
 
-  } 
+  }
 }
