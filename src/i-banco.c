@@ -79,7 +79,7 @@ void executarComando(comando_t c){
     switch (c.operacao) {
         case OP_LERSALDO:
             pthread_mutex_lock(&threadsContas[c.idConta]);
-            
+            printf("asdasd");
             if (c.valor < 0)
                 printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
             else
@@ -90,7 +90,7 @@ void executarComando(comando_t c){
 
         case OP_CREDITAR:
             pthread_mutex_lock(&threadsContas[c.idConta]);
-
+            printf("asdasd");
             if (creditar (c.idConta, c.valor) < 0)
                 printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
             else
@@ -101,7 +101,7 @@ void executarComando(comando_t c){
 
         case OP_DEBITAR:
             pthread_mutex_lock(&threadsContas[c.idConta]);
-
+            printf("asdasd");
             if (debitar (c.idConta, c.valor) < 0)
                printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
             else
@@ -180,7 +180,7 @@ int main (int argc, char** argv) {
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
     int numPids = 0;
-    sem_init(&podeProd, 0, NUM_CONTAS);
+    sem_init(&podeProd, 0, CMD_BUFFER_DIM);
     sem_init(&podeCons, 0, 0);
     inicializarContas();
     inicializarThreads();
@@ -190,11 +190,10 @@ int main (int argc, char** argv) {
     while (1) {
         int numargs;
         pids pids[MAXCHILDS];
-        numargs = readLineArguments(args, MAXARGS+1, buffer, CMD_BUFFER_DIM);
+        numargs = readLineArguments(args, MAXARGS+1, buffer, BUFFER_SIZE);
         int estado, sairAgora = 0;
         /* EOF (end of file) do stdin ou comando "sair" , "sair agora"*/
         if (numargs < 0 || (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
-            printf("how");
             if (numargs < 2) {
 
             /* Sair Agora */    
@@ -226,35 +225,40 @@ int main (int argc, char** argv) {
                 printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid, (pids[i].estado > 0) ? "normalmente" : "abruptamente");
             }
             printf("--\n");
-            printf("(asd)\n");
             sairAgora = 0;
             exit(EXIT_SUCCESS); 
     
         }
-    else if (numargs == 0)
-        /* Nenhum argumento; ignora e volta a pedir */
-        continue;
-            
-    /* Debitar */
-    else if (strcmp(args[0], COMANDO_DEBITAR) == 0) {
-        if (numargs < 3) {
-            printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
+
+        else if (numargs == 0)
+            /* Nenhum argumento; ignora e volta a pedir */
             continue;
-        }
-        produtor(atoi(args[1]),atoi(args[2]),OP_DEBITAR);
+            
+        /* Debitar */
+        else if (strcmp(args[0], COMANDO_DEBITAR) == 0) {
+            //int idConta, valor;
+            if (numargs < 3) {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
+               continue;
+            }
+
+            produtor(atoi(args[1]),atoi(args[2]),OP_DEBITAR);
     }
 
     /* Creditar */
     else if (strcmp(args[0], COMANDO_CREDITAR) == 0) {
+        //int idConta, valor;
         if (numargs < 3) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_CREDITAR);
             continue;
         }
+
         produtor(atoi(args[1]),atoi(args[2]),OP_CREDITAR);
     }
 
     /* Ler Saldo */
     else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
+        //int idConta, saldo;
 
         if (numargs < 2) {
             printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
