@@ -69,7 +69,7 @@ void executarComando(comando_t c){
 * Returns: void*
 * Description:  << [Função executada pelas tarefas TRABALHADORAS] >>
 *				dfsnjkfjsdnfnsdjksfjknd
-*				jsdfjdfsjkfsdjkdnsffdsnjksdfnjkfdsnjk
+*               jsdfjdfsjkfsdjkdnsffdsnjksdfnjkfdsnjk
 *****************************************************************************************/
 void *lerComandos(void *args){
     while(1){
