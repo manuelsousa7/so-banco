@@ -30,141 +30,12 @@
 #include <sys/wait.h>
 #include "contas.h"
 #include "commandlinereader.h"
-
-/* Macros - Comandos */
-#define COMANDO_DEBITAR "debitar"
-#define COMANDO_CREDITAR "creditar"
-#define COMANDO_LER_SALDO "lerSaldo"
-#define COMANDO_SIMULAR "simular"
-#define COMANDO_SAIR "sair"
-#define COMANDO_AGORA "agora"
-
-/* Operações - Comandos */
-#define OP_SAIR 1
-#define OP_SAIRAGORA 2
-#define OP_LERSALDO 3
-#define OP_CREDITAR 4
-#define OP_DEBITAR 5
+#include "parte1.h"
+#include "parte2.h"
 
 /*Constantes*/
 #define MAXARGS 3
 #define BUFFER_SIZE 100
-#define MAXCHILDS 20
-#define NUM_TRABALHADORAS 2
-#define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
-
-
-typedef struct PID{
-    pid_t pid;
-    int estado;
-}pids;
-
-
-typedef struct{
-    int operacao;
-    int idConta;
-    int valor;
-} comando_t;
-
-pthread_t tid[NUM_TRABALHADORAS+1];
-pthread_mutex_t semExMut,threadsContas[NUM_CONTAS];
-sem_t podeProd,podeCons;
-
-int buff_write_idx = 0, buff_read_idx = 0;
-
-comando_t cmd_buffer[CMD_BUFFER_DIM];
-
-void executarComando(comando_t c){
-    switch (c.operacao) {
-        case OP_LERSALDO:
-            pthread_mutex_lock(&threadsContas[c.idConta]);
-            //printf("OP_LERSALDO %d\n",pthread_self() == tid[0]);
-            int saldo = lerSaldo (c.idConta);
-            //sleep(10);
-            if (lerSaldo(c.idConta) < 0)
-                printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
-            else
-                printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, saldo);
-            pthread_mutex_unlock(&threadsContas[c.idConta]);
-            break;
-
-        case OP_CREDITAR:
-            pthread_mutex_lock(&threadsContas[c.idConta]);
-            //printf("OP_CREDITAR %d\n",pthread_self() == tid[0]);
-            if (creditar (c.idConta, c.valor) < 0)
-                printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
-            else
-                printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
-
-            pthread_mutex_unlock(&threadsContas[c.idConta]);
-            break;
-
-        case OP_DEBITAR:
-            pthread_mutex_lock(&threadsContas[c.idConta]);
-            //printf("OP_DEBITAR %d\n",pthread_self() == tid[0]);
-            if (debitar (c.idConta, c.valor) < 0)
-               printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
-            else
-                printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
-
-            pthread_mutex_unlock(&threadsContas[c.idConta]);
-            break;
-        case OP_SAIR:
-            pthread_exit(NULL);
-            exit(EXIT_SUCCESS);
-            break;
-        default:
-            
-            break;
-    }
-
-}
-
-void *lerComandos(void *args){
-    while(1){
-        sem_wait(&podeCons);
-        pthread_mutex_lock(&semExMut);
-        comando_t consumido = cmd_buffer[buff_read_idx];
-        buff_read_idx = (buff_read_idx+1) % CMD_BUFFER_DIM;
-        pthread_mutex_unlock(&semExMut);
-        sem_post(&podeProd);
-        executarComando(consumido);
-    }
-}
-
-void inicializarThreads(){
-    for(int i = 0; i < NUM_TRABALHADORAS ; i++){
-        int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL);
-        if (err != 0)
-            printf("Falha ao criar Thread :[%s]\n", strerror(err));
-        //else
-        //    printf("Thread criado com sucesso\n");
-    }
-}
-
-void produtor(int idConta, int valor, int OP){
-    sem_wait(&podeProd);
-    pthread_mutex_lock(&semExMut);
-    cmd_buffer[buff_write_idx].operacao = OP;
-    cmd_buffer[buff_write_idx].valor = valor;
-    cmd_buffer[buff_write_idx].idConta = idConta;
-    buff_write_idx = (buff_write_idx+1) % CMD_BUFFER_DIM;
-    pthread_mutex_unlock(&semExMut);
-    sem_post(&podeCons);
-}
-void killThreads(){
-    for(int i = 0; i < NUM_TRABALHADORAS ; i++){
-        produtor(0,0,OP_SAIR);
-    }
-
-    for(int i = 0; i < NUM_TRABALHADORAS ; i++){
-        int err = pthread_join(tid[i], NULL);
-        if (err != 0)
-            printf("Falha ao criar Thread :[%s]\n", strerror(err));
-        //else
-        //    printf("Thread morto com sucesso\n");
-    }
-}
 
 
 /******************************************************************************************
@@ -178,10 +49,8 @@ int main (int argc, char** argv) {
     char *args[MAXARGS + 1];
     char buffer[BUFFER_SIZE];
     int numPids = 0;
-    sem_init(&podeProd, 0, CMD_BUFFER_DIM);
-    sem_init(&podeCons, 0, 0);
     inicializarContas();
-    inicializarThreads();
+    inicializarThreadsSemaforos();
 
     printf("Bem-vinda/o ao i-banco\n\n");
     
@@ -208,7 +77,7 @@ int main (int argc, char** argv) {
             }
 
             /* Vai terminar e sincronizar todas as tarefas do sistema */    
-            killThreads();
+            killThreadsSemaforos();
 
             /* Ciclo que vai terminar todos os Processos Filho */    
             for(int i=0;i<numPids;i++){
