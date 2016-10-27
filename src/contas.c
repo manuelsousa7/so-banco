@@ -34,7 +34,6 @@ void inicializarContas() {
 }
 
 int debitar(int idConta, int valor) {
-  iniciaEscrita(idConta);
   atrasar();
   if (!contaExiste(idConta))
     return -1;
@@ -42,27 +41,22 @@ int debitar(int idConta, int valor) {
     return -1;
   atrasar();
   contasSaldos[idConta - 1] -= valor;
-  acabaEscrita(idConta);
   return 0;
 }
 
 int creditar(int idConta, int valor) {
-  iniciaEscrita(idConta);
   atrasar();
   if (!contaExiste(idConta))
     return -1;
   contasSaldos[idConta - 1] += valor;
   return 0;
-  acabaEscrita(idConta);
 }
 
 int lerSaldo(int idConta) {
-  iniciaLeitura(idConta);
   atrasar();
   if (!contaExiste(idConta))
     return -1;
   return contasSaldos[idConta - 1];
-  acabaLeitura(idConta);
 }
 
 
