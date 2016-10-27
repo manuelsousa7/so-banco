@@ -51,7 +51,7 @@ void executarComando(comando_t c){
             pthread_mutex_unlock(&threadsContas[c.idConta]);
             break;
         case OP_SAIR:
-            pthread_exit(NULL);
+            pthread_exit(NULL); //Termina tarefa
             exit(EXIT_SUCCESS);
             break;
         default:
@@ -93,10 +93,13 @@ void *lerComandos(void *args){
 *               Cria as tarefas trabalhadoras (definidas em macro - NUM_TRABALHADORAS)
 *****************************************************************************************/
 void inicializarThreadsSemaforos(){
+	/* Incia Semáforos */
 	sem_init(&podeProd, 0, CMD_BUFFER_DIM);
     sem_init(&podeCons, 0, 0);
+
+    /* Inicia Tarefas */
     for(int i = 0; i < NUM_TRABALHADORAS ; i++){
-        int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL);
+        int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL); // Cria tarefa e guarta o Thread ID num vetor, e atribui a função lerComandos à tarefa
         if (err != 0)
             printf("Falha ao criar Thread :[%s]\n", strerror(err));
     }
@@ -135,16 +138,19 @@ void produtor(int idConta, int valor, int OP){
 *               Destroi os 2 semaforos do sistema Produtor - Consumidor.
 *****************************************************************************************/
 void killThreadsSemaforos(){
+	/* Percorre as tarefas todas e força para dar exit */
     for(int i = 0; i < NUM_TRABALHADORAS ; i++){
         produtor(0, 0, OP_SAIR);
     }
 
     for(int i = 0; i < NUM_TRABALHADORAS ; i++){
-        int err = pthread_join(tid[i], NULL);
+        int err = pthread_join(tid[i], NULL); //Sincroniza a i tarefa
         if (err != 0)
             printf("Falha ao criar Thread :[%s]\n", strerror(err));
     }
-    sem_destroy(&podeProd);
+
+    /* Destroi Semáforos */
+    sem_destroy(&podeProd); 
     sem_destroy(&podeCons);
 }
 

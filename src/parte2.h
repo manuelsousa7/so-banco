@@ -43,7 +43,7 @@ typedef struct{
     int valor;
 } comando_t;
 
-pthread_t tid[NUM_TRABALHADORAS+1]; // Vetor que guarda os Thread ID's de todas as tarefas
+pthread_t tid[NUM_TRABALHADORAS + 1]; // Vetor que guarda os Thread ID's de todas as tarefas
 
 pthread_mutex_t semExMut;// Mutex de exclusão mutua
 pthread_mutex_t threadsContas[NUM_CONTAS];//Vetor de Mutexex que associa Mutex a cada conta
