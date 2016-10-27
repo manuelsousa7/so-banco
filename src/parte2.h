@@ -3,9 +3,15 @@
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
-* SYNOPSIS:     Nenhum
-* DESCRIPTION:  Prototipos das funcoes de leitura dos comandos
-* DIAGNOSTICS:  tested
+* SYNOPSIS:     #include <stdio.h> - I/O regular
+                #include <pthread.h>  - tarefas - pthread_mutex_t & pthread_t types, pthread_create, pthread_mutex_(un)lock, pthread_exit
+                #include <stdlib.h>  - exit(), atoi()
+                #include <semaphore.h> - semaforos - sem_init, sem_wait, sem_destroy
+                #include <string.h> - char strings, strerror()
+                #include "contas.h" - Prototipos de todas as operações relacionadas com contas
+                #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
+* DESCRIPTION:  Defines (macros) e Prototipos das funcoes da parte2 (tarefas)
+* DIAGNOSTICS:  OK
 *****************************************************************************************/
 
 #ifndef PARTE2_H
@@ -16,14 +22,8 @@
 #include <stdlib.h>
 #include <semaphore.h>
 #include <string.h>
-#include "parte1.h"
 #include "contas.h"
-
-typedef struct{
-    int operacao;
-    int idConta;
-    int valor;
-} comando_t;
+#include "parte1.h"
 
 /* Operações - Comandos */
 #define OP_SAIR 1
@@ -32,24 +32,34 @@ typedef struct{
 #define OP_CREDITAR 4
 #define OP_DEBITAR 5
 
+/* Operações - Comandos */
 #define NUM_TRABALHADORAS 2
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
+/* Estrutura do buffer de comandos */
+typedef struct{
+    int operacao;
+    int idConta;
+    int valor;
+} comando_t;
 
-pthread_t tid[NUM_TRABALHADORAS+1];
-pthread_mutex_t semExMut,threadsContas[NUM_CONTAS];
-sem_t podeProd,podeCons;
+pthread_t tid[NUM_TRABALHADORAS+1]; // Vetor que guarda os Thread ID's de todas as tarefas
 
-int buff_write_idx, buff_read_idx;
+pthread_mutex_t semExMut;// Mutex de exclusão mutua
+pthread_mutex_t threadsContas[NUM_CONTAS];//Vetor de Mutexex que associa Mutex a cada conta
 
-comando_t cmd_buffer[CMD_BUFFER_DIM];
+sem_t podeProd, podeCons; //Semáforos do sistema Produtor - Consumidor.
 
+int buff_write_idx; //cursor que guarda o indice da proxima posisao a escrever no buffer
+int buff_read_idx;  //cursor que guarda o indice da proxima posisao a ler no buffer
 
+comando_t cmd_buffer[CMD_BUFFER_DIM]; //Buffer Circular
+
+/* Protótipos das Funções */
 void executarComando(comando_t c);
 void *lerComandos(void *args);
 void inicializarThreadsSemaforos();
 void produtor(int idConta, int valor, int OP);
 void killThreadsSemaforos();
-
 
 #endif

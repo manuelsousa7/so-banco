@@ -18,22 +18,16 @@
                 make run
 *****************************************************************************************/
 
-/*Bibliotecas*/
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <signal.h>
 #include <unistd.h>
-#include <semaphore.h>
-#include <pthread.h>
 #include <sys/wait.h>
 #include "contas.h"
 #include "commandlinereader.h"
 #include "parte1.h"
 #include "parte2.h"
 
-/*Constantes*/
+/* Constantes */
 #define MAXARGS 3
 #define BUFFER_SIZE 100
 

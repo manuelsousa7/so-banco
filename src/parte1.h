@@ -3,8 +3,9 @@
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
-* SYNOPSIS:     Nenhum
-* DESCRIPTION:  Prototipos das funcoes de leitura dos comandos
+* SYNOPSIS:     #include <unistd.h> - fork(), pid_t type
+*
+* DESCRIPTION:  Defines (macros) e estruturas dos processos (Parte 1 do projeto)
 * DIAGNOSTICS:  tested
 *****************************************************************************************/
 
@@ -12,14 +13,6 @@
 #define PARTE1_H
 
 #include <unistd.h>
-
-#define MAXCHILDS 20
-
-
-typedef struct PID{
-    pid_t pid;
-    int estado;
-}pids;
 
 /* Macros - Comandos */
 #define COMANDO_DEBITAR "debitar"
@@ -29,5 +22,13 @@ typedef struct PID{
 #define COMANDO_SAIR "sair"
 #define COMANDO_AGORA "agora"
 
+/* Número Máximo de Processos */
+#define MAXCHILDS 20
+
+/* Estrutura que guarda os ID's dos processos */
+typedef struct PID{
+    pid_t pid;
+    int estado;
+} pids;
 
 #endif
