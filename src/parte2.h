@@ -37,7 +37,7 @@
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 /* Estrutura do buffer de comandos */
-typedef struct{
+typedef struct {
     int operacao;
     int idConta;
     int valor;

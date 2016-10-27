@@ -26,9 +26,9 @@
 #define MAXCHILDS 20
 
 /* Estrutura que guarda os ID's dos processos */
-typedef struct PID{
-    pid_t pid;
-    int estado;
+typedef struct PID {
+	pid_t pid;
+	int estado;
 } pids;
 
 #endif

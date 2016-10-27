@@ -51,17 +51,17 @@ int main (int argc, char** argv) {
     while (1) {
         int numargs;
         pids pids[MAXCHILDS];
-        numargs = readLineArguments(args, MAXARGS+1, buffer, BUFFER_SIZE);
+        numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
         int estado, sairAgora = 0;
         /* EOF (end of file) do stdin ou comando "sair" , "sair agora"*/
         if (numargs < 0 || (numargs > 0  && (strcmp(args[0], COMANDO_SAIR) == 0))) {
             if (numargs < 2) {
 
-            /* Sair Agora */
+                /* Sair Agora */
             } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
                 sairAgora = 1;
                 //Ciclo que vai enviar um sinal individualmente para cada Processo Filho
-                for(int i = 0; i < numPids; i++){
+                for (int i = 0; i < numPids; i++) {
                     if (kill(pids[i].pid, SIGUSR1) != 0) //Verifica se ocorreu um erro ao enviar um Sinal
                         printf("%s: Erro ao enviar sinal para o Processo.\n", strcat(COMANDO_SAIR , COMANDO_AGORA));
                 }
@@ -74,19 +74,19 @@ int main (int argc, char** argv) {
             killThreadsSemaforos();
 
             /* Ciclo que vai terminar todos os Processos Filho */
-            for(int i=0;i<numPids;i++){
+            for (int i = 0; i < numPids; i++) {
 
-                if(waitpid(pids[i].pid,&estado,0) == -1) //Terminar Processo filho. Se ocorrer um erro vai cair no if statment
+                if (waitpid(pids[i].pid, &estado, 0) == -1) //Terminar Processo filho. Se ocorrer um erro vai cair no if statment
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                if(WIFEXITED(estado) != 0){ //Se o processo sair com um exit corretamente (de que maneira for)
-                    if(WEXITSTATUS(estado) == 2) //Vamos verificar se o exit retornou o termino por signal
+                if (WIFEXITED(estado) != 0) { //Se o processo sair com um exit corretamente (de que maneira for)
+                    if (WEXITSTATUS(estado) == 2) //Vamos verificar se o exit retornou o termino por signal
                         printf("Simulacao terminada por signal\n");
                 }
                 pids[i].estado = WIFEXITED(estado) ? 1 : -1;
             }
             printf("i-banco vai terminar.\n--\n");
-            for(int i = 0; i < numPids; i++){
-                printf("FILHO TERMINADO (PID=%d; terminou %s)\n",pids[i].pid, (pids[i].estado > 0) ? "normalmente" : "abruptamente");
+            for (int i = 0; i < numPids; i++) {
+                printf("FILHO TERMINADO (PID=%d; terminou %s)\n", pids[i].pid, (pids[i].estado > 0) ? "normalmente" : "abruptamente");
             }
             printf("--\n");
             sairAgora = 0;
@@ -103,56 +103,56 @@ int main (int argc, char** argv) {
             //int idConta, valor;
             if (numargs < 3) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
-               continue;
+                continue;
             }
 
-            produtor(atoi(args[1]),atoi(args[2]),OP_DEBITAR);
-    }
-
-    /* Creditar */
-    else if (strcmp(args[0], COMANDO_CREDITAR) == 0) {
-        //int idConta, valor;
-        if (numargs < 3) {
-            printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_CREDITAR);
-            continue;
+            produtor(atoi(args[1]), atoi(args[2]), OP_DEBITAR);
         }
 
-        produtor(atoi(args[1]),atoi(args[2]),OP_CREDITAR);
-    }
+        /* Creditar */
+        else if (strcmp(args[0], COMANDO_CREDITAR) == 0) {
+            //int idConta, valor;
+            if (numargs < 3) {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_CREDITAR);
+                continue;
+            }
 
-    /* Ler Saldo */
-    else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
-        //int idConta, saldo;
-
-        if (numargs < 2) {
-            printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
-            continue;
+            produtor(atoi(args[1]), atoi(args[2]), OP_CREDITAR);
         }
-        produtor(atoi(args[1]),0,OP_LERSALDO);
-    }
 
-    /* Simular */
-    else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {
-        int anos;
-        pid_t pid;
-        if ((anos = atoi(args[1])) <= 0){
-            printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
+        /* Ler Saldo */
+        else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
+            //int idConta, saldo;
+
+            if (numargs < 2) {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
+                continue;
+            }
+            produtor(atoi(args[1]), 0, OP_LERSALDO);
+        }
+
+        /* Simular */
+        else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {
+            int anos;
+            pid_t pid;
+            if ((anos = atoi(args[1])) <= 0) {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
+            } else {
+                pid = fork();
+                if (pid < 0) { // Erro ao fazer fork do processo PAI
+                    printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
+                    exit(EXIT_FAILURE);
+                } else if (pid == 0) { //Criou Processo filho com sucesso
+                    simular(anos);
+                    exit(EXIT_SUCCESS);
+                } else if (pid > 0) { // Processo PAI
+                    pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
+                }
+            }
+            continue;
         } else {
-            pid = fork();
-            if(pid < 0){ // Erro ao fazer fork do processo PAI
-                printf("%s: ERRO ao criar processo.ID do fork %d\n",COMANDO_SIMULAR,pid);
-                exit(EXIT_FAILURE);
-            } else if (pid == 0) { //Criou Processo filho com sucesso
-                simular(anos);
-                exit(EXIT_SUCCESS);
-            } else if (pid > 0){ // Processo PAI
-                pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
-            }
+            printf("Comando desconhecido. Tente de novo.\n");
         }
-        continue;
-    } else {
-      printf("Comando desconhecido. Tente de novo.\n");
-    }
 
-  }
+    }
 }
