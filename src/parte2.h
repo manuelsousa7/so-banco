@@ -33,7 +33,7 @@
 #define OP_DEBITAR 5
 
 /* Operações - Comandos */
-#define NUM_TRABALHADORAS 2
+#define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 /* Estrutura do buffer de comandos */
