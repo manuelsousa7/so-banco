@@ -68,18 +68,20 @@ void executarComando(comando_t c){
 *
 * Returns: void*
 * Description:  << [Função executada pelas tarefas TRABALHADORAS] >>
-*               dfsnjkfjsdnfnsdjksfjknd
-*               jsdfjdfsjkfsdjkdnsffdsnjksdfnjkfdsnjk
+*               Vai buscar comando a executar ao buffer circular de dados
+*               {Consumidor} do sistema Produtor - {Consumidor}
 *****************************************************************************************/
 void *lerComandos(void *args){
     while(1){
-        sem_wait(&podeCons);
-        pthread_mutex_lock(&semExMut);
+        sem_wait(&podeCons); // Esperar
+        pthread_mutex_lock(&semExMut); //Fechar
         comando_t consumido = cmd_buffer[buff_read_idx];
         buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM;
-        pthread_mutex_unlock(&semExMut);
-        sem_post(&podeProd);
-        executarComando(consumido);
+        pthread_mutex_unlock(&semExMut); // Abrir
+        sem_post(&podeProd); // Assinalar
+        
+        /* Após adquirir o comando a executar do buffer circular de dados, vamos executa-lo */
+        executarComando(consumido); 
     }
 }
 
@@ -99,7 +101,7 @@ void inicializarThreadsSemaforos(){
 
     /* Inicia Tarefas */
     for(int i = 0; i < NUM_TRABALHADORAS ; i++){
-        int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL); // Cria tarefa e guarta o Thread ID num vetor, e atribui a função lerComandos à tarefa
+        int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL); // Cria tarefa e guarda o Thread ID num vetor, e atribui a função lerComandos à tarefa
         if (err != 0)
             printf("Falha ao criar Thread :[%s]\n", strerror(err));
     }
@@ -113,18 +115,18 @@ void inicializarThreadsSemaforos(){
 *               OP: operacao a efetuar (codigo das OP's definidas em macro)
 *
 * Returns: void
-* Description:  dasdsadsadsa
-*               sdffsdfs
+* Description:  Acrescenta novo comando a executar no buffer circular de dados
+*               {Produtor} do sistema {Produtor} - Consumidor
 *****************************************************************************************/
 void produtor(int idConta, int valor, int OP){
-    sem_wait(&podeProd);
-    pthread_mutex_lock(&semExMut);
+    sem_wait(&podeProd); // Esperar
+    pthread_mutex_lock(&semExMut); // Fechar
     cmd_buffer[buff_write_idx].operacao = OP;
     cmd_buffer[buff_write_idx].valor = valor;
     cmd_buffer[buff_write_idx].idConta = idConta;
-    buff_write_idx = (buff_write_idx+1) % CMD_BUFFER_DIM;
-    pthread_mutex_unlock(&semExMut);
-    sem_post(&podeCons);
+    buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de escrita
+    pthread_mutex_unlock(&semExMut); // Abrir
+    sem_post(&podeCons); // Assinalar
 }
 
 /******************************************************************************************
