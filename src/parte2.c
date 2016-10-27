@@ -5,7 +5,7 @@
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     Nenhum
 * DESCRIPTION:  Contem todas as funções relativas à parte2 do projeto sobre tarefas, 
-*				sistema Produtor - Consumidor e buffer circular de comandos
+*               sistema Produtor - Consumidor e buffer circular de comandos
 * DIAGNOSTICS:  tested
 *****************************************************************************************/
 
@@ -68,7 +68,7 @@ void executarComando(comando_t c){
 *
 * Returns: void*
 * Description:  << [Função executada pelas tarefas TRABALHADORAS] >>
-*				dfsnjkfjsdnfnsdjksfjknd
+*               dfsnjkfjsdnfnsdjksfjknd
 *               jsdfjdfsjkfsdjkdnsffdsnjksdfnjkfdsnjk
 *****************************************************************************************/
 void *lerComandos(void *args){
@@ -90,7 +90,7 @@ void *lerComandos(void *args){
 *
 * Returns: void
 * Description:  Inicializa os 2 semaforos do sistema Produtor - Consumidor.
-*				Cria as tarefas trabalhadoras (definidas em macro - NUM_TRABALHADORAS)
+*               Cria as tarefas trabalhadoras (definidas em macro - NUM_TRABALHADORAS)
 *****************************************************************************************/
 void inicializarThreadsSemaforos(){
 	sem_init(&podeProd, 0, CMD_BUFFER_DIM);
@@ -106,12 +106,12 @@ void inicializarThreadsSemaforos(){
 * produtor()
 *
 * Arguments:	idConta: id da conta sobre a qual queremos efetuar a operacao
-*				valor: valor correspondente à conta com idConta
-*				OP: operacao a efetuar (codigo das OP's definidas em macro)
+*               valor: valor correspondente à conta com idConta
+*               OP: operacao a efetuar (codigo das OP's definidas em macro)
 *
 * Returns: void
 * Description:  dasdsadsadsa
-*				sdffsdfs
+*               sdffsdfs
 *****************************************************************************************/
 void produtor(int idConta, int valor, int OP){
     sem_wait(&podeProd);
@@ -131,8 +131,8 @@ void produtor(int idConta, int valor, int OP){
 *
 * Returns: void
 * Description:  Força todas as tarefas a sair
-*				Após a saida de todas as tarefas, sincroniza-as
-*				Destroi os 2 semaforos do sistema Produtor - Consumidor.
+*               Após a saida de todas as tarefas, sincroniza-as
+*               Destroi os 2 semaforos do sistema Produtor - Consumidor.
 *****************************************************************************************/
 void killThreadsSemaforos(){
     for(int i = 0; i < NUM_TRABALHADORAS ; i++){
