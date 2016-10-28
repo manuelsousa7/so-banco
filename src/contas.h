@@ -5,7 +5,7 @@
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     Nenhum
 * DESCRIPTION:  Prototipos e constantes das operações das contas (i-banco)
-* DIAGNOSTICS:  tested
+* DIAGNOSTICS:  OK
 *****************************************************************************************/
 
 #ifndef CONTAS_H
@@ -15,8 +15,10 @@
 #define TAXAJURO 0.1
 #define CUSTOMANUTENCAO 1
 
-#define ATRASO 1
+#define ATRASO 1 // SLEEP
 
+
+/* Protótipos das Funções */
 void inicializarContas();
 int contaExiste(int idConta);
 int debitar(int idConta, int valor);

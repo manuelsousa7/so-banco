@@ -4,11 +4,11 @@
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     #include <stdio.h>
-                #include <unistd.h> - sleep()
-                #include <stdlib.h> - exit()
-                #include "contas.h" - Prototipos dos comandos do banco
+*               #include <unistd.h> - sleep()
+*               #include <stdlib.h> - exit()
+*               #include "contas.h" - Prototipos dos comandos do banco
 * DESCRIPTION:  Funções que suportam todas as operações relacionadas com as contas
-* DIAGNOSTICS:  tested
+* DIAGNOSTICS:  OK
 *****************************************************************************************/
 
 #include <stdio.h>
@@ -18,7 +18,7 @@
 #include "contas.h"
 
 #define atrasar() sleep(ATRASO)
-		     
+
 int contasSaldos[NUM_CONTAS];
 
 int flag = -1; //Flag que vai ser usada para tratamento de signals
@@ -29,7 +29,7 @@ int contaExiste(int idConta) {
 
 void inicializarContas() {
   int i;
-  for (i=0; i<NUM_CONTAS; i++)
+  for (i = 0; i < NUM_CONTAS; i++)
     contasSaldos[i] = 0;
 }
 
@@ -60,6 +60,7 @@ int lerSaldo(int idConta) {
 }
 
 
+
 /******************************************************************************************
 * handler()
 *
@@ -68,7 +69,7 @@ int lerSaldo(int idConta) {
 * Returns: void
 * Description:  Altera a variavel global (flag) para o valor 1. Indica que recebeu um Sinal!
 *****************************************************************************************/
-void handler(){
+void handler() {
   flag = 1;
 }
 
@@ -81,8 +82,8 @@ void handler(){
 * Description:  Verifica se a variavel global (flag) foi alterada pela funcão [handler]
                 Se foi alterada, então houve um sinal
 *****************************************************************************************/
-void isDead(){
-  if(flag == 1) {
+void isDead() {
+  if (flag == 1) {
     exit(2); //Houve Signal
   }
 }
@@ -97,30 +98,30 @@ void isDead(){
 *****************************************************************************************/
 void simular(int numAnos) {
   /* Se houver um problema a tratar do Signal vai ocorrer um erro*/
-  if (signal(SIGUSR1, handler) == SIG_ERR){
+  if (signal(SIGUSR1, handler) == SIG_ERR) {
     printf("simular: Não foi possivel tratar do sinal\n");
     exit(EXIT_FAILURE);
   }
 
-  
+
   int contasSaldosSimular[NUM_CONTAS];
   //Copia dos saldos das contas
-  for(int i = 0;i < NUM_CONTAS;i++){
-    contasSaldosSimular[i] = lerSaldo(i+1);
+  for (int i = 0; i < NUM_CONTAS; i++) {
+    contasSaldosSimular[i] = lerSaldo(i + 1);
   }
 
   isDead(); //Verifica se ocorreu um sinal
 
-  for(int i = 0; i <= numAnos; i++){
+  for (int i = 0; i <= numAnos; i++) {
     printf("SIMULACAO: Ano %d\n=================\n", i);
-    for(int ii = 0; ii < NUM_CONTAS; ii++){
-      if(i != 0 && contasSaldosSimular[ii] != 0){
+    for (int ii = 0; ii < NUM_CONTAS; ii++) {
+      if (i != 0 && contasSaldosSimular[ii] != 0) {
         contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
       }
-      printf("Conta %d, Saldo %d\n", ii+1, contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
+      printf("Conta %d, Saldo %d\n", ii + 1, contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
     }
     isDead(); //Verifica se ocorreu um sinal
     printf("\n");
   }
-  exit(1);    
+  exit(1);
 }
