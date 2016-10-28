@@ -126,7 +126,7 @@ void *lerComandos(void *args) {
 *
 * Returns: void
 * Description:  Inicializa todos os mutexes (de cada conta e do sistema Produtor - Consumidor)
-*				Inicializa os 2 semaforos do sistema Produtor - Consumidor.
+*               Inicializa os 2 semaforos do sistema Produtor - Consumidor.
 *               Cria as tarefas trabalhadoras (definidas em macro - NUM_TRABALHADORAS)
 *****************************************************************************************/
 void inicializarThreadsSemaforosMutexes() {
@@ -197,8 +197,8 @@ void produtor(int idConta, int valor, int OP) {
 *
 * Returns: void
 * Description:  Destroi todos os mutexes (de cada conta e do sistema Produtor - Consumidor)
-*				Força todas as tarefas a sair
-*				Após a saida de todas as tarefas, sincroniza-as
+*               Força todas as tarefas a sair
+*               Após a saida de todas as tarefas, sincroniza-as
 *               Destroi os 2 semaforos do sistema Produtor - Consumidor.
 *****************************************************************************************/
 void killThreadsSemaforosMutexes() {
