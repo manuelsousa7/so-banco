@@ -44,7 +44,7 @@ int main (int argc, char** argv) {
     char buffer[BUFFER_SIZE];
     int numPids = 0;
     inicializarContas();
-    inicializarThreadsSemaforos();
+    inicializarThreadsSemaforosMutexes();
 
     printf("Bem-vinda/o ao i-banco\n\n");
 
@@ -71,7 +71,7 @@ int main (int argc, char** argv) {
             }
 
             /* Vai terminar e sincronizar todas as tarefas do sistema. Destroi tambem os respetivos semaforos */
-            killThreadsSemaforos();
+            killThreadsSemaforosMutexes();
 
             /* Ciclo que vai terminar todos os Processos Filho */
             for (int i = 0; i < numPids; i++) {

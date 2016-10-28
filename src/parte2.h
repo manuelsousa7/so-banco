@@ -58,8 +58,8 @@ comando_t cmd_buffer[CMD_BUFFER_DIM]; //Buffer Circular de comandos
 /* Protótipos das Funções */
 void executarComando(comando_t c);
 void *lerComandos(void *args);
-void inicializarThreadsSemaforos();
+void inicializarThreadsSemaforosMutexes();
 void produtor(int idConta, int valor, int OP);
-void killThreadsSemaforos();
+void killThreadsSemaforosMutexes();
 
 #endif

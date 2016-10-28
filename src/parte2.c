@@ -28,6 +28,7 @@ void executarComando(comando_t c) {
 		}
 
 		int saldo = lerSaldo (c.idConta);
+		sleep(10);
 		if (lerSaldo(c.idConta) < 0)
 			printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
 		else
@@ -128,7 +129,17 @@ void *lerComandos(void *args) {
 * Description:  Inicializa os 2 semaforos do sistema Produtor - Consumidor.
 *               Cria as tarefas trabalhadoras (definidas em macro - NUM_TRABALHADORAS)
 *****************************************************************************************/
-void inicializarThreadsSemaforos() {
+void inicializarThreadsSemaforosMutexes() {
+	/* Incia Mutex geral do Produtor - Consumidor */
+	if (pthread_mutex_init(&semExMut, NULL) != 0) {
+		printf("ERRO: pthread_mutex_init - params: &semExMut\n");
+	}
+	/* Incia Mutexes das contas */
+	for (int i = 0; i < NUM_CONTAS; i++) {
+		if (pthread_mutex_init(&threadsContas[i], NULL) != 0) {
+			printf("ERRO: pthread_mutex_init - params: &threadsContas[i]\n");
+		}
+	}
 	/* Incia Semáforos */
 	if (sem_init(&podeProd, 0, CMD_BUFFER_DIM) != 0) {
 		printf("ERRO: sem_init - params: [&podeProd, 0, CMD_BUFFER_DIM]\n");
@@ -189,7 +200,7 @@ void produtor(int idConta, int valor, int OP) {
 *               Após a saida de todas as tarefas, sincroniza-as
 *               Destroi os 2 semaforos do sistema Produtor - Consumidor.
 *****************************************************************************************/
-void killThreadsSemaforos() {
+void killThreadsSemaforosMutexes() {
 	/* Percorre as tarefas todas e força para dar exit */
 	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
 		produtor(0, 0, OP_SAIR);
@@ -200,6 +211,18 @@ void killThreadsSemaforos() {
 		int err = pthread_join(tid[i], NULL);
 		if (err != 0)
 			printf("Falha ao criar Thread :[%s]\n", strerror(err));
+	}
+
+	/* Destroi Mutex geral do Produtor - Consumidor */
+	if (pthread_mutex_destroy(&semExMut) != 0) {
+		printf("ERRO: pthread_mutex_destroy - params: &semExMut\n");
+	}
+
+	/* Destroi Mutexes das contas */
+	for (int i = 0; i < NUM_CONTAS; i++) {
+		if (pthread_mutex_destroy(&threadsContas[i]) != 0) {
+			printf("ERRO: pthread_mutex_destroy - params: &threadsContas[i]\n");
+		}
 	}
 
 	/* Destroi Semáforos */
