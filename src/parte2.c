@@ -28,7 +28,6 @@ void executarComando(comando_t c) {
 		}
 
 		int saldo = lerSaldo (c.idConta);
-		sleep(10);
 		if (lerSaldo(c.idConta) < 0)
 			printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
 		else
