@@ -6,7 +6,7 @@
 * SYNOPSIS:     #include <unistd.h> - fork(), pid_t type
 *
 * DESCRIPTION:  Defines (macros) e estruturas dos processos (Parte 1 do projeto)
-* DIAGNOSTICS:  tested
+* DIAGNOSTICS:  OK
 *****************************************************************************************/
 
 #ifndef PARTE1_H
