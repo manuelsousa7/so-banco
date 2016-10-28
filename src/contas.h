@@ -5,7 +5,7 @@
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     Nenhum
 * DESCRIPTION:  Prototipos e constantes das operações das contas (i-banco)
-* DIAGNOSTICS:  tested
+* DIAGNOSTICS:  OK
 *****************************************************************************************/
 
 #ifndef CONTAS_H

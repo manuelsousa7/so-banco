@@ -6,7 +6,7 @@
 * SYNOPSIS:     #include "parte2.h" - Prototipos e Estruturas usadas na entrega 2 (tarefas)
 * DESCRIPTION:  Contem todas as funções relativas à parte2 do projeto sobre tarefas,
 *               sistema Produtor - Consumidor e buffer circular de comandos
-* DIAGNOSTICS:  tested
+* DIAGNOSTICS:  OK
 *****************************************************************************************/
 
 #include "parte2.h"
@@ -17,11 +17,12 @@
 * Arguments:  c:  comando do buffer a executar
 *
 * Returns: void
-* Description:  Executa um comando que recebe como argumento
+* Description:  Executa um comando que recebe como argumento (Não executa 2 comandos da mesma conta ao mesmo tempo)
 *****************************************************************************************/
 void executarComando(comando_t c) {
 	switch (c.operacao) {
 	case OP_LERSALDO:
+		/* Fechar */
 		if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0) {
 			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
 		}
@@ -32,12 +33,14 @@ void executarComando(comando_t c) {
 		else
 			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, saldo);
 
+		/* Abrir */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0) {
 			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
 		}
 		break;
 
 	case OP_CREDITAR:
+		/* Fechar */
 		if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0) {
 			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
 		}
@@ -47,12 +50,14 @@ void executarComando(comando_t c) {
 		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
 
+		/* Abrir */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0) {
 			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
 		}
 		break;
 
 	case OP_DEBITAR:
+		/* Fechar */
 		if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0) {
 			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
 		}
@@ -62,6 +67,7 @@ void executarComando(comando_t c) {
 		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
 
+		/* Abrir */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0) {
 			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
 		}

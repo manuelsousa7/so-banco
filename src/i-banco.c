@@ -4,13 +4,13 @@
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     #include <stdio.h> - I/O regular
-                #include <string.h>  - char strings
-                #include <stdlib.h>  - exit(), atoi()
-                #include <unistd.h> - fork()
                 #include <signal.h> - signal(), kill()
+                #include <unistd.h> - fork()
                 #include <sys/wait.h> - waitpid()
-                #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
                 #include "contas.h" - Prototipos de todas as operações relacionadas com contas
+                #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
+                #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
+                #include "parte2.h" - Prototipos e Estruturas usadas na entrega 2 (tarefas)
 * DESCRIPTION:  funcao main (i-banco)
 * DIAGNOSTICS:  tested
 * USAGE:        make clean
@@ -30,7 +30,6 @@
 /* Constantes */
 #define MAXARGS 3
 #define BUFFER_SIZE 100
-
 
 
 /******************************************************************************************
@@ -71,7 +70,7 @@ int main (int argc, char** argv) {
                 continue;
             }
 
-            /* Vai terminar e sincronizar todas as tarefas do sistema */
+            /* Vai terminar e sincronizar todas as tarefas do sistema. Destroi tambem os respetivos semaforos */
             killThreadsSemaforos();
 
             /* Ciclo que vai terminar todos os Processos Filho */
