@@ -101,7 +101,6 @@ int main (int argc, char** argv) {
 
         /* Debitar */
         else if (strcmp(args[0], COMANDO_DEBITAR) == 0) {
-            //int idConta, valor;
             if (numargs < 3) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
                 continue;
@@ -112,7 +111,6 @@ int main (int argc, char** argv) {
 
         /* Creditar */
         else if (strcmp(args[0], COMANDO_CREDITAR) == 0) {
-            //int idConta, valor;
             if (numargs < 3) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_CREDITAR);
                 continue;
@@ -123,8 +121,6 @@ int main (int argc, char** argv) {
 
         /* Ler Saldo */
         else if (strcmp(args[0], COMANDO_LER_SALDO) == 0) {
-            //int idConta, saldo;
-
             if (numargs < 2) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
                 continue;
