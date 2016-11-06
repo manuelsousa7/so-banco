@@ -21,7 +21,7 @@
 #define COMANDO_SIMULAR "simular"
 #define COMANDO_SAIR "sair"
 #define COMANDO_AGORA "agora"
-#define COMANDO_TRANFERIR "agora" //Parte 3
+#define COMANDO_TRANSFERIR "agora" //Parte 3
 
 /* Número Máximo de Processos */
 #define MAXCHILDS 20

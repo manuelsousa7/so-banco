@@ -49,6 +49,12 @@ pthread_t tid[NUM_TRABALHADORAS]; // Vetor que guarda os Thread ID's de todas as
 pthread_mutex_t semExMut;// Mutex de exclusão mutua
 pthread_mutex_t threadsContas[NUM_CONTAS];// Vetor de Mutexes que associa um Mutex a cada conta
 
+/* Parte 3 */
+
+pthread_mutex_t mcond;
+pthread_cond_t vazio,cheio;
+
+
 sem_t podeProd, podeCons; // Semáforos do sistema Produtor - Consumidor.
 
 int buff_write_idx; // Cursor que guarda o indice da proxima posisao a escrever no buffer
@@ -56,11 +62,14 @@ int buff_read_idx;  // Cursor que guarda o indice da proxima posisao a ler no bu
 
 comando_t cmd_buffer[CMD_BUFFER_DIM]; //Buffer Circular de comandos
 
+int espera;
+
+
 /* Protótipos das Funções */
 void executarComando(comando_t c);
 void *lerComandos(void *args);
 void inicializarThreadsSemaforosMutexes();
-void produtor(int idConta, int valor, int OP);
+void produtor(int idConta, int idConta2, int valor, int OP);
 void killThreadsSemaforosMutexes();
 
 #endif

@@ -79,7 +79,7 @@ void executarComando(comando_t c) {
 			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
 		}
 
-		if (transferir(c.idConta, c.idConta2, valor) < 0)
+		if (transferir(c.idConta, c.idConta2, c.valor) < 0)
 			printf("Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.valor);
 		else
 			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
@@ -113,6 +113,10 @@ void executarComando(comando_t c) {
 *****************************************************************************************/
 void *lerComandos(void *args) {
 	while (1) {
+		while (espera) {
+			puts("Esta a espera");
+			pthread_cond_wait(&cheio, &mcond);
+		}
 		/* Esperar */
 		if (sem_wait(&podeCons) != 0) {
 			printf("ERRO: sem_wait - &podeCons\n");
@@ -127,6 +131,12 @@ void *lerComandos(void *args) {
 		if (pthread_mutex_unlock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_unlock - &semExMut\n");
 		}
+
+		if (buff_write_idx == buff_read_idx) {
+			puts("Pode simular");
+			pthread_cond_signal(&vazio);
+		}
+
 		/* Assinalar */
 		if (sem_post(&podeProd) != 0) {
 			printf("ERRO: sem_post - &podeProd\n");
@@ -165,6 +175,10 @@ void inicializarThreadsSemaforosMutexes() {
 		printf("ERRO: sem_init - params: [&podeCons, 0, 0]\n");
 	}
 
+	pthread_mutex_init(&mcond, NULL);
+	pthread_cond_init(&vazio, NULL);
+	pthread_cond_init(&cheio, NULL);
+
 	/* Inicia Tarefas */
 	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
 		int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL); // Cria tarefa e guarda o Thread ID num vetor, e atribui a função lerComandos à tarefa
@@ -185,6 +199,7 @@ void inicializarThreadsSemaforosMutexes() {
 *               {Produtor} do sistema {Produtor} - Consumidor
 *****************************************************************************************/
 void produtor(int idConta, int idConta2, int valor, int OP) {
+
 	/* Esperar */
 	if (sem_wait(&podeProd) != 0) {
 		printf("ERRO: sem_wait - &podeProd\n");
@@ -222,7 +237,7 @@ void produtor(int idConta, int idConta2, int valor, int OP) {
 void killThreadsSemaforosMutexes() {
 	/* Percorre as tarefas todas e força para dar exit */
 	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
-		produtor(0, 0, OP_SAIR);
+		produtor(-1, -1, -1, OP_SAIR);
 	}
 
 	/* Sincroniza as tarefas todas */

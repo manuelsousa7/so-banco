@@ -115,7 +115,7 @@ int main (int argc, char** argv) {
                 continue;
             }
 
-            produtor(atoi(args[1]), atoi(args[2]), -1, OP_CREDITAR);
+            produtor(atoi(args[1]), -1, atoi(args[2]), OP_CREDITAR);
         }
 
         /* Ler Saldo */
@@ -143,6 +143,8 @@ int main (int argc, char** argv) {
             if ((anos = atoi(args[1])) <= 0) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
             } else {
+                espera = 1;
+                pthread_cond_wait(&vazio, &mcond);
                 pid = fork();
                 if (pid < 0) { // Erro ao fazer fork do processo PAI
                     printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
@@ -151,6 +153,8 @@ int main (int argc, char** argv) {
                     simular(anos);
                     exit(EXIT_SUCCESS);
                 } else if (pid > 0) { // Processo PAI
+                    espera = 0;
+                    pthread_cond_signal(&cheio);
                     pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
                 }
             }
