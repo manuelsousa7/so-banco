@@ -3,8 +3,8 @@
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
-* SYNOPSIS:     #include "parte2.h" - Prototipos e Estruturas usadas na entrega 2 (tarefas)
-* DESCRIPTION:  Contem todas as funções relativas à parte2 do projeto sobre tarefas,
+* SYNOPSIS:     #include "parte2e3.h" - Prototipos e Estruturas usadas na entrega 2 e 3
+* DESCRIPTION:  Contem todas as funções relativas à parte 2 e 3 do projeto sobre tarefas,
 *               sistema Produtor - Consumidor e buffer circular de comandos
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
@@ -144,7 +144,6 @@ void *lerComandos(void *args) {
 		comando_t consumido = cmd_buffer[buff_read_idx];
 		buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de leitura
 
-
 		/* Abrir */
 		if (pthread_mutex_unlock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_unlock - &semExMut\n");
@@ -157,16 +156,16 @@ void *lerComandos(void *args) {
 		/* Após adquirir o comando a executar do buffer circular de dados, vamos executa-lo */
 
 		executarComando(consumido);
-		StuffInside--; //Decrementa items no contador
+		comandosNoBuffer--; //Decrementa numero de comandos no contador
 
 		/* Fechar */
 		if (pthread_mutex_lock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_lock - &semExMut\n");
 		}
-		if (StuffInside == 0) {
+		if (comandosNoBuffer == 0) {
 			pthread_cond_signal(&cheio);
 		}
-		/* Fechar */
+		/* Abrir */
 		if (pthread_mutex_unlock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_lock - &semExMut\n");
 		}
@@ -241,8 +240,8 @@ void produtor(int idConta, int idConta2, int valor, int OP) {
 	cmd_buffer[buff_write_idx].idConta = idConta;
 	cmd_buffer[buff_write_idx].idConta2 = idConta2;
 	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de escrita
-	StuffInside++;//Incrementa numero de comandos no contador
-	
+	comandosNoBuffer++; //Incrementa numero de comandos no contador
+
 	/* Abrir */
 	if (pthread_mutex_unlock(&semExMut) != 0) {
 		printf("ERRO: pthread_mutex_unlock - &semExMut\n");

@@ -10,7 +10,7 @@
                 #include "contas.h" - Prototipos de todas as operações relacionadas com contas
                 #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
                 #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
-                #include "parte2.h" - Prototipos e Estruturas usadas na entrega 2 (tarefas)
+                #include "parte2e3.h" - Prototipos e Estruturas usadas na entrega 2 e 3
 * DESCRIPTION:  funcao main (i-banco)
 * DIAGNOSTICS:  tested
 * USAGE:        make clean
@@ -149,7 +149,7 @@ int main (int argc, char** argv) {
                 }
 
                 /* Veririca se ha comandos no buffer. */
-                while (StuffInside != 0) {
+                while (comandosNoBuffer != 0) {
                     pthread_cond_wait(&cheio, &semExMut); //Espera
                 }
 

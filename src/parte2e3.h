@@ -9,8 +9,8 @@
 *               #include <semaphore.h> - semaforos - sem_init, sem_wait, sem_destroy
 *               #include <string.h> - char strings, strerror()
 *               #include "contas.h" - Prototipos de todas as operações relacionadas com contas
-*               #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
-* DESCRIPTION:  Defines (macros) e Prototipos das funcoes da parte2 (tarefas)
+*               #include "parte1.h" - Prototipos das funcoes da parte 1 - Defines (macros) dos comandos
+* DESCRIPTION:  Defines (macros) e Prototipos das funcoes da parte 2 e 3 (tarefas)
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
@@ -56,7 +56,7 @@ pthread_mutex_t threadsContas[NUM_CONTAS];// Vetor de Mutexes que associa um Mut
 
 /* Parte 3 */
 pthread_cond_t cheio; // Variavel de condicao
-int StuffInside; //Guarda o numero de comandos atuais no buffer
+int comandosNoBuffer; //Guarda o numero de comandos atuais no buffer
 
 sem_t podeProd, podeCons; // Semáforos do sistema Produtor - Consumidor.
 
