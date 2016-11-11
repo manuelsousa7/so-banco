@@ -1,9 +1,0 @@
-debitar 4 1
-debitar 2 1
-debitar 1 1
-debitar 2 1
-debitar 3 1
-simular 1
-debitar 1 1
-debitar 2 1
-simular 2
