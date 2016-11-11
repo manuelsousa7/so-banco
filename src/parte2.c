@@ -74,21 +74,26 @@ void executarComando(comando_t c) {
 
 		break;
 	case OP_TRANSFERIR:
-		/* Fechar */
-		if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0) {
+		if ((!contaExiste(c.idConta) || !contaExiste(c.idConta2)) && c.idConta != c.idConta2)
+			break;
+		if (pthread_mutex_lock(&threadsContas[MIN(c.idConta, c.idConta2)]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
+		}
+		if (pthread_mutex_lock(&threadsContas[MAX(c.idConta, c.idConta2)]) != 0) {
 			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
 		}
 
 		if (transferir(c.idConta, c.idConta2, c.valor) < 0)
-			printf("Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.valor);
+			printf("Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.idConta2);
 		else
-			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
+			printf("%s(%d, %d): OK\n\n", COMANDO_TRANSFERIR, c.idConta, c.valor);
 
-		/* Abrir */
-		if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
+		if (pthread_mutex_unlock(&threadsContas[MAX(c.idConta, c.idConta2)]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta,c.idConta2)]\n");
 		}
-
+		if (pthread_mutex_unlock(&threadsContas[MIN(c.idConta, c.idConta2)]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta,c.idConta2)]\n");
+		}
 		break;
 	case OP_SAIR:
 		pthread_exit(NULL); //Termina tarefa - ESTA FUNCAO TEM SEMPRE SUCESSO
@@ -113,10 +118,6 @@ void executarComando(comando_t c) {
 *****************************************************************************************/
 void *lerComandos(void *args) {
 	while (1) {
-		while (espera) {
-			puts("Esta a espera");
-			pthread_cond_wait(&cheio, &mcond);
-		}
 		/* Esperar */
 		if (sem_wait(&podeCons) != 0) {
 			printf("ERRO: sem_wait - &podeCons\n");
@@ -127,14 +128,11 @@ void *lerComandos(void *args) {
 		}
 		comando_t consumido = cmd_buffer[buff_read_idx];
 		buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de leitura
+
+
 		/* Abrir */
 		if (pthread_mutex_unlock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_unlock - &semExMut\n");
-		}
-
-		if (buff_write_idx == buff_read_idx) {
-			puts("Pode simular");
-			pthread_cond_signal(&vazio);
 		}
 
 		/* Assinalar */
@@ -143,6 +141,18 @@ void *lerComandos(void *args) {
 		}
 		/* Após adquirir o comando a executar do buffer circular de dados, vamos executa-lo */
 		executarComando(consumido);
+		StuffInside--;
+		/* Fechar */
+		if (pthread_mutex_lock(&semExMut) != 0) {
+			printf("ERRO: pthread_mutex_lock - &semExMut\n");
+		}
+		if (StuffInside == 0) {
+			pthread_cond_signal(&cheio);
+		}
+		/* Fechar */
+		if (pthread_mutex_unlock(&semExMut) != 0) {
+			printf("ERRO: pthread_mutex_lock - &semExMut\n");
+		}
 	}
 }
 
@@ -175,8 +185,6 @@ void inicializarThreadsSemaforosMutexes() {
 		printf("ERRO: sem_init - params: [&podeCons, 0, 0]\n");
 	}
 
-	pthread_mutex_init(&mcond, NULL);
-	pthread_cond_init(&vazio, NULL);
 	pthread_cond_init(&cheio, NULL);
 
 	/* Inicia Tarefas */
@@ -213,6 +221,7 @@ void produtor(int idConta, int idConta2, int valor, int OP) {
 	cmd_buffer[buff_write_idx].idConta = idConta;
 	cmd_buffer[buff_write_idx].idConta2 = idConta2;
 	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de escrita
+	StuffInside++;
 	/* Abrir */
 	if (pthread_mutex_unlock(&semExMut) != 0) {
 		printf("ERRO: pthread_mutex_unlock - &semExMut\n");
@@ -258,6 +267,8 @@ void killThreadsSemaforosMutexes() {
 			printf("ERRO: pthread_mutex_destroy - params: &threadsContas[i]\n");
 		}
 	}
+
+	pthread_cond_destroy(&cheio);
 
 	/* Destroi Semáforos */
 	if (sem_destroy(&podeProd) != 0) {

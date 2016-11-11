@@ -32,9 +32,14 @@
 #define OP_CREDITAR 4
 #define OP_DEBITAR 5
 #define OP_TRANSFERIR 6 //Parte 3
+
 /* Operações - Comandos */
 #define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
+
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#define MAX(a,b) ((a) < (b) ? (a) : (b))
+
 
 /* Estrutura do buffer de comandos */
 typedef struct {
@@ -46,14 +51,14 @@ typedef struct {
 
 pthread_t tid[NUM_TRABALHADORAS]; // Vetor que guarda os Thread ID's de todas as tarefas
 
-pthread_mutex_t semExMut;// Mutex de exclusão mutua
+pthread_mutex_t semExMut,semExMut2;// Mutex de exclusão mutua
 pthread_mutex_t threadsContas[NUM_CONTAS];// Vetor de Mutexes que associa um Mutex a cada conta
 
 /* Parte 3 */
 
 pthread_mutex_t mcond;
-pthread_cond_t vazio,cheio;
-
+pthread_cond_t vazio, cheio;
+pthread_mutex_t mutex;
 
 sem_t podeProd, podeCons; // Semáforos do sistema Produtor - Consumidor.
 
@@ -61,7 +66,7 @@ int buff_write_idx; // Cursor que guarda o indice da proxima posisao a escrever 
 int buff_read_idx;  // Cursor que guarda o indice da proxima posisao a ler no buffer
 
 comando_t cmd_buffer[CMD_BUFFER_DIM]; //Buffer Circular de comandos
-
+int StuffInside;
 int espera;
 
 

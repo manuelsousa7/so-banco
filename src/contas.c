@@ -46,6 +46,10 @@ int debitar(int idConta, int valor) {
 
 int creditar(int idConta, int valor) {
   atrasar();
+  atrasar();
+  atrasar();
+  atrasar();
+  atrasar();
   if (!contaExiste(idConta))
     return -1;
   contasSaldos[idConta - 1] += valor;
@@ -62,11 +66,8 @@ int lerSaldo(int idConta) {
 
 int transferir(int idConta1, int idConta2, int valor) {
   atrasar();
-  if ((!contaExiste(idConta1) || !contaExiste(idConta2)) && idConta1 != idConta2)
-    return -1;
   if (contasSaldos[idConta1 - 1] < valor)
     return -1;
-  atrasar();
   contasSaldos[idConta1 - 1] -= valor;
   contasSaldos[idConta2 - 1] += valor;
   return 0;
