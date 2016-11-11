@@ -25,7 +25,7 @@
 #include "contas.h"
 #include "commandlinereader.h"
 #include "parte1.h"
-#include "parte2.h"
+#include "parte2e3.h"
 
 /* Constantes */
 #define MAXARGS 4
@@ -143,20 +143,23 @@ int main (int argc, char** argv) {
             if ((anos = atoi(args[1])) <= 0) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
             } else {
-                /* Fechar */
+                /* Abrir */
                 if (pthread_mutex_lock(&semExMut) != 0) {
                     printf("ERRO: pthread_mutex_lock - &semExMut\n");
                 }
+
+                /* Veririca se ha comandos no buffer. */
                 while (StuffInside != 0) {
-                    pthread_cond_wait(&cheio, &semExMut);
+                    pthread_cond_wait(&cheio, &semExMut); //Espera
                 }
-                puts("ahhahhahah");
+
                 pid = fork();
+
                 /* Fechar */
                 if (pthread_mutex_unlock(&semExMut) != 0) {
-                    printf("ERRO: pthread_mutex_lock - &semExMut\n");
+                    printf("ERRO: pthread_mutex_unlock - &semExMut\n");
                 }
-                espera++;
+
                 if (pid < 0) { // Erro ao fazer fork do processo PAI
                     printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
                     exit(EXIT_FAILURE);
@@ -164,7 +167,6 @@ int main (int argc, char** argv) {
                     simular(anos);
                     exit(EXIT_SUCCESS);
                 } else if (pid > 0) { // Processo PAI
-                    espera--;
                     pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
                 }
             }
