@@ -60,6 +60,26 @@ int lerSaldo(int idConta) {
 }
 
 
+/******************************************************************************************
+* transferir()
+*
+* Arguments:  idConta1:  numero da conta onde se vai retirar o dinheiro
+*             idConta2:  numero da conta onde se deposita o dinheiro
+*             valor:  valor a depositar na conta idConta2
+*
+* Returns: void
+* Description:  Transfere dinheiro de uma conta para a outra. Relativo a Parte 3
+*****************************************************************************************/
+int transferir(int idConta1, int idConta2, int valor) {
+  atrasar();
+  if (contasSaldos[idConta1 - 1] < valor) //Verifica se ha saldo disponivel
+    return -1;
+  contasSaldos[idConta1 - 1] -= valor;
+  contasSaldos[idConta2 - 1] += valor;
+  return 0;
+}
+
+
 
 /******************************************************************************************
 * handler()

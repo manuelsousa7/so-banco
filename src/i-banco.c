@@ -10,7 +10,7 @@
                 #include "contas.h" - Prototipos de todas as operações relacionadas com contas
                 #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
                 #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
-                #include "parte2.h" - Prototipos e Estruturas usadas na entrega 2 (tarefas)
+                #include "parte2e3.h" - Prototipos e Estruturas usadas na entrega 2 e 3
 * DESCRIPTION:  funcao main (i-banco)
 * DIAGNOSTICS:  tested
 * USAGE:        make clean
@@ -25,10 +25,10 @@
 #include "contas.h"
 #include "commandlinereader.h"
 #include "parte1.h"
-#include "parte2.h"
+#include "parte2e3.h"
 
 /* Constantes */
-#define MAXARGS 3
+#define MAXARGS 4
 #define BUFFER_SIZE 100
 
 
@@ -105,7 +105,7 @@ int main (int argc, char** argv) {
                 continue;
             }
 
-            produtor(atoi(args[1]), atoi(args[2]), OP_DEBITAR);
+            produtor(atoi(args[1]), -1, atoi(args[2]), OP_DEBITAR);
         }
 
         /* Creditar */
@@ -115,7 +115,7 @@ int main (int argc, char** argv) {
                 continue;
             }
 
-            produtor(atoi(args[1]), atoi(args[2]), OP_CREDITAR);
+            produtor(atoi(args[1]), -1, atoi(args[2]), OP_CREDITAR);
         }
 
         /* Ler Saldo */
@@ -124,7 +124,16 @@ int main (int argc, char** argv) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
                 continue;
             }
-            produtor(atoi(args[1]), 0, OP_LERSALDO);
+            produtor(atoi(args[1]), -1, -1, OP_LERSALDO);
+        }
+
+        /* Tranferir */
+        else if (strcmp(args[0], COMANDO_TRANSFERIR) == 0) {
+            if (numargs != 4) {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_TRANSFERIR);
+                continue;
+            }
+            produtor(atoi(args[1]), atoi(args[2]), atoi(args[3]), OP_TRANSFERIR);
         }
 
         /* Simular */
@@ -134,7 +143,23 @@ int main (int argc, char** argv) {
             if ((anos = atoi(args[1])) <= 0) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SIMULAR);
             } else {
+                /* Abrir */
+                if (pthread_mutex_lock(&semExMut) != 0) {
+                    printf("ERRO: pthread_mutex_lock - &semExMut\n");
+                }
+
+                /* Veririca se ha comandos no buffer */
+                while (comandosNoBuffer != 0) {
+                    pthread_cond_wait(&cheio, &semExMut); //Espera
+                }
+
                 pid = fork();
+
+                /* Fechar */
+                if (pthread_mutex_unlock(&semExMut) != 0) {
+                    printf("ERRO: pthread_mutex_unlock - &semExMut\n");
+                }
+
                 if (pid < 0) { // Erro ao fazer fork do processo PAI
                     printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
                     exit(EXIT_FAILURE);

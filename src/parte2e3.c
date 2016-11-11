@@ -1,15 +1,15 @@
 /******************************************************************************************
-* File Name:    parte2.c
+* File Name:    parte2e3.c
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
-* SYNOPSIS:     #include "parte2.h" - Prototipos e Estruturas usadas na entrega 2 (tarefas)
-* DESCRIPTION:  Contem todas as funções relativas à parte2 do projeto sobre tarefas,
+* SYNOPSIS:     #include "parte2e3.h" - Prototipos e Estruturas usadas na entrega 2 e 3
+* DESCRIPTION:  Contem todas as funções relativas à parte 2 e 3 do projeto sobre tarefas,
 *               sistema Produtor - Consumidor e buffer circular de comandos
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#include "parte2.h"
+#include "parte2e3.h"
 
 /******************************************************************************************
 * executarComando()
@@ -22,9 +22,13 @@
 void executarComando(comando_t c) {
 	switch (c.operacao) {
 	case OP_LERSALDO:
+		if (!contaExiste(c.idConta)) {
+			printf("A conta %d nao existe\n", c.idConta);
+			break;
+		}
 		/* Fechar */
-		if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
+		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
 		}
 
 		int saldo = lerSaldo (c.idConta);
@@ -34,15 +38,19 @@ void executarComando(comando_t c) {
 			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, saldo);
 
 		/* Abrir */
-		if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
+		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
 		}
 		break;
 
 	case OP_CREDITAR:
+		if (!contaExiste(c.idConta)) {
+			printf("A conta %d nao existe\n", c.idConta);
+			break;
+		}
 		/* Fechar */
-		if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
+		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
 		}
 
 		if (creditar (c.idConta, c.valor) < 0)
@@ -51,15 +59,19 @@ void executarComando(comando_t c) {
 			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
 
 		/* Abrir */
-		if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
+		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
 		}
 		break;
 
 	case OP_DEBITAR:
+		if (!contaExiste(c.idConta)) {
+			printf("A conta %d nao existe\n", c.idConta);
+			break;
+		}
 		/* Fechar */
-		if (pthread_mutex_lock(&threadsContas[c.idConta]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta]\n");
+		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
 		}
 
 		if (debitar (c.idConta, c.valor) < 0)
@@ -68,17 +80,42 @@ void executarComando(comando_t c) {
 			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
 
 		/* Abrir */
-		if (pthread_mutex_unlock(&threadsContas[c.idConta]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta]\n");
+		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
 		}
 
+		break;
+	case OP_TRANSFERIR:
+		if ((!contaExiste(c.idConta) || !contaExiste(c.idConta2)) || c.idConta == c.idConta2) {
+			printf("Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.idConta2);
+			break;
+		}
+		/* Fechar Contas relativas a operacao */
+		if (pthread_mutex_lock(&threadsContas[MIN(c.idConta - 1, c.idConta2 - 1)]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[MIN(c.idConta-1, c.idConta2-1)]\n");
+		}
+		if (pthread_mutex_lock(&threadsContas[MAX(c.idConta - 1, c.idConta2 - 1)]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[MAX(c.idConta-1, c.idConta2-1)]\n");
+		}
+
+		if (transferir(c.idConta, c.idConta2, c.valor) < 0)
+			printf("Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.idConta2);
+		else
+			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, c.idConta, c.idConta2, c.valor);
+
+		/* Abrir Contas relativas a operacao */
+		if (pthread_mutex_unlock(&threadsContas[MAX(c.idConta - 1, c.idConta2 - 1)]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta-1,c.idConta2-1)]\n");
+		}
+		if (pthread_mutex_unlock(&threadsContas[MIN(c.idConta - 1, c.idConta2 - 1)]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
+		}
 		break;
 	case OP_SAIR:
 		pthread_exit(NULL); //Termina tarefa - ESTA FUNCAO TEM SEMPRE SUCESSO
 		exit(EXIT_SUCCESS);
 		break;
 	default:
-
 		break;
 	}
 
@@ -106,16 +143,32 @@ void *lerComandos(void *args) {
 		}
 		comando_t consumido = cmd_buffer[buff_read_idx];
 		buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de leitura
+
 		/* Abrir */
 		if (pthread_mutex_unlock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_unlock - &semExMut\n");
 		}
+
 		/* Assinalar */
 		if (sem_post(&podeProd) != 0) {
 			printf("ERRO: sem_post - &podeProd\n");
 		}
 		/* Após adquirir o comando a executar do buffer circular de dados, vamos executa-lo */
+
 		executarComando(consumido);
+		comandosNoBuffer--; //Decrementa numero de comandos no contador
+
+		/* Fechar */
+		if (pthread_mutex_lock(&semExMut) != 0) {
+			printf("ERRO: pthread_mutex_lock - &semExMut\n");
+		}
+		if (comandosNoBuffer == 0) {
+			pthread_cond_signal(&cheio);
+		}
+		/* Abrir */
+		if (pthread_mutex_unlock(&semExMut) != 0) {
+			printf("ERRO: pthread_mutex_lock - &semExMut\n");
+		}
 	}
 }
 
@@ -148,6 +201,9 @@ void inicializarThreadsSemaforosMutexes() {
 		printf("ERRO: sem_init - params: [&podeCons, 0, 0]\n");
 	}
 
+	/* Inicia Variavel de Condicão */
+	pthread_cond_init(&cheio, NULL);
+
 	/* Inicia Tarefas */
 	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
 		int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL); // Cria tarefa e guarda o Thread ID num vetor, e atribui a função lerComandos à tarefa
@@ -160,14 +216,16 @@ void inicializarThreadsSemaforosMutexes() {
 * produtor()
 *
 * Arguments:	idConta: id da conta sobre a qual queremos efetuar a operacao
-*               valor: valor correspondente à conta com idConta
+*               idConta2: id da conta sobre a qual queremos efetuar a operacao (usado apenas no comando transferir)
+				valor: valor correspondente à conta com idConta
 *               OP: operacao a efetuar (codigo das OP's definidas em macro)
 *
 * Returns: void
 * Description:  Acrescenta novo comando a executar no buffer circular de dados
 *               {Produtor} do sistema {Produtor} - Consumidor
 *****************************************************************************************/
-void produtor(int idConta, int valor, int OP) {
+void produtor(int idConta, int idConta2, int valor, int OP) {
+
 	/* Esperar */
 	if (sem_wait(&podeProd) != 0) {
 		printf("ERRO: sem_wait - &podeProd\n");
@@ -176,10 +234,14 @@ void produtor(int idConta, int valor, int OP) {
 	if (pthread_mutex_lock(&semExMut) != 0) {
 		printf("ERRO: pthread_mutex_lock - &semExMut\n");
 	}
+
 	cmd_buffer[buff_write_idx].operacao = OP;
 	cmd_buffer[buff_write_idx].valor = valor;
 	cmd_buffer[buff_write_idx].idConta = idConta;
+	cmd_buffer[buff_write_idx].idConta2 = idConta2;
 	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de escrita
+	comandosNoBuffer++; //Incrementa numero de comandos no contador
+
 	/* Abrir */
 	if (pthread_mutex_unlock(&semExMut) != 0) {
 		printf("ERRO: pthread_mutex_unlock - &semExMut\n");
@@ -204,7 +266,7 @@ void produtor(int idConta, int valor, int OP) {
 void killThreadsSemaforosMutexes() {
 	/* Percorre as tarefas todas e força para dar exit */
 	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
-		produtor(0, 0, OP_SAIR);
+		produtor(-1, -1, -1, OP_SAIR);
 	}
 
 	/* Sincroniza as tarefas todas */
@@ -225,6 +287,9 @@ void killThreadsSemaforosMutexes() {
 			printf("ERRO: pthread_mutex_destroy - params: &threadsContas[i]\n");
 		}
 	}
+
+	/* Destroi Variável de Condição */
+	pthread_cond_destroy(&cheio);
 
 	/* Destroi Semáforos */
 	if (sem_destroy(&podeProd) != 0) {

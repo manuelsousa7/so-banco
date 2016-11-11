@@ -1,21 +1,22 @@
 /******************************************************************************************
-* File Name:    parte2.h
+* File Name:    parte2e3.h
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     #include <stdio.h> - I/O regular
-*               #include <pthread.h>  - tarefas - pthread_mutex_t & pthread_t types, pthread_create, pthread_mutex_(un)lock, pthread_exit
+*               #include <pthread.h>  - tarefas - pthread_mutex_t & pthread_t types, pthread_create,
+				pthread_mutex_(un)lock, pthread_exit, pthread_cond_init, pthread_cond_wait
 *               #include <stdlib.h>  - exit(), atoi()
 *               #include <semaphore.h> - semaforos - sem_init, sem_wait, sem_destroy
 *               #include <string.h> - char strings, strerror()
 *               #include "contas.h" - Prototipos de todas as operações relacionadas com contas
-*               #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
-* DESCRIPTION:  Defines (macros) e Prototipos das funcoes da parte2 (tarefas)
+*               #include "parte1.h" - Prototipos das funcoes da parte 1 - Defines (macros) dos comandos
+* DESCRIPTION:  Defines (macros) e Prototipos das funcoes da parte 2 e 3 (tarefas)
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#ifndef PARTE2_H
-#define PARTE2_H
+#ifndef PARTE2E3_H
+#define PARTE2E3_H
 
 #include <stdio.h>
 #include <pthread.h>
@@ -31,15 +32,21 @@
 #define OP_LERSALDO 3
 #define OP_CREDITAR 4
 #define OP_DEBITAR 5
+#define OP_TRANSFERIR 6 // Parte 3
 
 /* Operações - Comandos */
 #define NUM_TRABALHADORAS 3
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#define MAX(a,b) ((a) < (b) ? (b) : (a))
+
+
 /* Estrutura do buffer de comandos */
 typedef struct {
 	int operacao;
 	int idConta;
+	int idConta2;
 	int valor;
 } comando_t;
 
@@ -47,6 +54,10 @@ pthread_t tid[NUM_TRABALHADORAS]; // Vetor que guarda os Thread ID's de todas as
 
 pthread_mutex_t semExMut;// Mutex de exclusão mutua
 pthread_mutex_t threadsContas[NUM_CONTAS];// Vetor de Mutexes que associa um Mutex a cada conta
+
+/* Parte 3 */
+pthread_cond_t cheio; // Variavel de condicao
+int comandosNoBuffer; // Guarda o numero de comandos atuais no buffer
 
 sem_t podeProd, podeCons; // Semáforos do sistema Produtor - Consumidor.
 
@@ -59,7 +70,7 @@ comando_t cmd_buffer[CMD_BUFFER_DIM]; //Buffer Circular de comandos
 void executarComando(comando_t c);
 void *lerComandos(void *args);
 void inicializarThreadsSemaforosMutexes();
-void produtor(int idConta, int valor, int OP);
+void produtor(int idConta, int idConta2, int valor, int OP);
 void killThreadsSemaforosMutexes();
 
 #endif
