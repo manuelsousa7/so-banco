@@ -1,5 +1,5 @@
 /******************************************************************************************
-* File Name:    parte2.c
+* File Name:    parte2e3.c
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre

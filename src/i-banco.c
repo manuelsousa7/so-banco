@@ -129,7 +129,7 @@ int main (int argc, char** argv) {
 
         /* Tranferir */
         else if (strcmp(args[0], COMANDO_TRANSFERIR) == 0) {
-            if (numargs < 3) {
+            if (numargs != 4) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_TRANSFERIR);
                 continue;
             }
@@ -148,7 +148,7 @@ int main (int argc, char** argv) {
                     printf("ERRO: pthread_mutex_lock - &semExMut\n");
                 }
 
-                /* Veririca se ha comandos no buffer. */
+                /* Veririca se ha comandos no buffer */
                 while (comandosNoBuffer != 0) {
                     pthread_cond_wait(&cheio, &semExMut); //Espera
                 }

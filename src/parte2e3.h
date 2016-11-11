@@ -1,10 +1,11 @@
 /******************************************************************************************
-* File Name:    parte2.h
+* File Name:    parte2e3.h
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     #include <stdio.h> - I/O regular
-*               #include <pthread.h>  - tarefas - pthread_mutex_t & pthread_t types, pthread_create, pthread_mutex_(un)lock, pthread_exit
+*               #include <pthread.h>  - tarefas - pthread_mutex_t & pthread_t types, pthread_create,
+				pthread_mutex_(un)lock, pthread_exit, pthread_cond_init, pthread_cond_wait
 *               #include <stdlib.h>  - exit(), atoi()
 *               #include <semaphore.h> - semaforos - sem_init, sem_wait, sem_destroy
 *               #include <string.h> - char strings, strerror()
@@ -14,8 +15,8 @@
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#ifndef PARTE2_H
-#define PARTE2_H
+#ifndef PARTE2E3_H
+#define PARTE2E3_H
 
 #include <stdio.h>
 #include <pthread.h>
@@ -31,7 +32,7 @@
 #define OP_LERSALDO 3
 #define OP_CREDITAR 4
 #define OP_DEBITAR 5
-#define OP_TRANSFERIR 6 //Parte 3
+#define OP_TRANSFERIR 6 // Parte 3
 
 /* Operações - Comandos */
 #define NUM_TRABALHADORAS 3
@@ -56,7 +57,7 @@ pthread_mutex_t threadsContas[NUM_CONTAS];// Vetor de Mutexes que associa um Mut
 
 /* Parte 3 */
 pthread_cond_t cheio; // Variavel de condicao
-int comandosNoBuffer; //Guarda o numero de comandos atuais no buffer
+int comandosNoBuffer; // Guarda o numero de comandos atuais no buffer
 
 sem_t podeProd, podeCons; // Semáforos do sistema Produtor - Consumidor.
 
@@ -64,8 +65,6 @@ int buff_write_idx; // Cursor que guarda o indice da proxima posisao a escrever 
 int buff_read_idx;  // Cursor que guarda o indice da proxima posisao a ler no buffer
 
 comando_t cmd_buffer[CMD_BUFFER_DIM]; //Buffer Circular de comandos
-
-
 
 /* Protótipos das Funções */
 void executarComando(comando_t c);
