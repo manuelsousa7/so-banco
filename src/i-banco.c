@@ -135,6 +135,14 @@ int main (int argc, char** argv) {
             }
             produtor(atoi(args[1]), atoi(args[2]), atoi(args[3]), OP_TRANSFERIR);
         }
+        /* Saco Azul */
+        else if (strcmp(args[0], COMANDO_SACOAZUL) == 0) {
+            if (numargs != 2) {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SACOAZUL);
+                continue;
+            }
+            produtor(atoi(args[1]), -1, -1, OP_SACOAZUL);
+        }
 
         /* Simular */
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {

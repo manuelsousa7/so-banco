@@ -27,4 +27,5 @@ int lerSaldo(int idConta);
 void simular(int numAnos);
 void handler();
 int transferir(int idConta1, int idConta2, int valor);
+int transferirSacoAzul(int idConta) ;
 #endif

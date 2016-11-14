@@ -111,6 +111,37 @@ void executarComando(comando_t c) {
 			printf("ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
 		}
 		break;
+	case OP_SACOAZUL:
+		if (c.idConta == 1) {
+			printf("Saldo do saco azul %d\n\n", lerSaldo(1));
+			break;
+		}
+		else if (!contaExiste(c.idConta)) {
+			printf("Erro Saco Azul\n\n");
+			break;
+		}
+		/* Fechar Contas relativas a operacao */
+		if (pthread_mutex_lock(&threadsContas[0]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[MIN(c.idConta-1, c.idConta2-1)]\n");
+		}
+		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_lock - &threadsContas[MAX(c.idConta-1, c.idConta2-1)]\n");
+		}
+
+		if (transferirSacoAzul(c.idConta) < 0)
+			printf("Erro %s\n\n", COMANDO_SACOAZUL);
+		else
+			printf("%s OK\n\n", COMANDO_SACOAZUL);
+
+
+		/* Abrir Contas relativas a operacao */
+		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta-1,c.idConta2-1)]\n");
+		}
+		if (pthread_mutex_unlock(&threadsContas[0]) != 0) {
+			printf("ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
+		}
+		break;
 	case OP_SAIR:
 		pthread_exit(NULL); //Termina tarefa - ESTA FUNCAO TEM SEMPRE SUCESSO
 		exit(EXIT_SUCCESS);

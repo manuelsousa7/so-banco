@@ -60,6 +60,14 @@ int lerSaldo(int idConta) {
 }
 
 
+int transferirSacoAzul(int idConta) {
+  atrasar();
+  contasSaldos[0] += 0.10 * contasSaldos[idConta - 1];
+  contasSaldos[idConta - 1] -= 0.10 * contasSaldos[idConta - 1];
+  return 0;
+}
+
+
 /******************************************************************************************
 * transferir()
 *
