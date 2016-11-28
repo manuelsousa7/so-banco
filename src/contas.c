@@ -135,7 +135,7 @@ void simular(int numAnos) {
   int contasSaldosSimular[NUM_CONTAS];
   int i,ii;
   //Copia dos saldos das contas
-  for (int i = 0; i < NUM_CONTAS; i++) {
+  for (i = 0; i < NUM_CONTAS; i++) {
     contasSaldosSimular[i] = lerSaldo(i + 1);
   }
 
