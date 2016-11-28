@@ -214,12 +214,13 @@ void *lerComandos(void *args) {
 *               Cria as tarefas trabalhadoras (definidas em macro - NUM_TRABALHADORAS)
 *****************************************************************************************/
 void inicializarThreadsSemaforosMutexes() {
+	int i;
 	/* Incia Mutex geral do Produtor - Consumidor */
 	if (pthread_mutex_init(&semExMut, NULL) != 0) {
 		printf("ERRO: pthread_mutex_init - params: &semExMut\n");
 	}
 	/* Incia Mutexes das contas */
-	for (int i = 0; i < NUM_CONTAS; i++) {
+	for (i = 0; i < NUM_CONTAS; i++) {
 		if (pthread_mutex_init(&threadsContas[i], NULL) != 0) {
 			printf("ERRO: pthread_mutex_init - params: &threadsContas[i]\n");
 		}
@@ -236,7 +237,7 @@ void inicializarThreadsSemaforosMutexes() {
 	pthread_cond_init(&cheio, NULL);
 
 	/* Inicia Tarefas */
-	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
+	for (i = 0; i < NUM_TRABALHADORAS ; i++) {
 		int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL); // Cria tarefa e guarda o Thread ID num vetor, e atribui a função lerComandos à tarefa
 		if (err != 0)
 			printf("Falha ao criar Thread :[%s]\n", strerror(err));
@@ -295,13 +296,14 @@ void produtor(int idConta, int idConta2, int valor, int OP) {
 *               Destroi os 2 semaforos do sistema Produtor - Consumidor.
 *****************************************************************************************/
 void killThreadsSemaforosMutexes() {
+	int i;
 	/* Percorre as tarefas todas e força para dar exit */
-	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
+	for (i = 0; i < NUM_TRABALHADORAS ; i++) {
 		produtor(-1, -1, -1, OP_SAIR);
 	}
 
 	/* Sincroniza as tarefas todas */
-	for (int i = 0; i < NUM_TRABALHADORAS ; i++) {
+	for (i = 0; i < NUM_TRABALHADORAS ; i++) {
 		int err = pthread_join(tid[i], NULL);
 		if (err != 0)
 			printf("Falha ao criar Thread :[%s]\n", strerror(err));
@@ -313,7 +315,7 @@ void killThreadsSemaforosMutexes() {
 	}
 
 	/* Destroi Mutexes das contas */
-	for (int i = 0; i < NUM_CONTAS; i++) {
+	for (i = 0; i < NUM_CONTAS; i++) {
 		if (pthread_mutex_destroy(&threadsContas[i]) != 0) {
 			printf("ERRO: pthread_mutex_destroy - params: &threadsContas[i]\n");
 		}
