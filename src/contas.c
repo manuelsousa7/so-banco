@@ -133,6 +133,7 @@ void simular(int numAnos) {
 
 
   int contasSaldosSimular[NUM_CONTAS];
+  int i,ii;
   //Copia dos saldos das contas
   for (int i = 0; i < NUM_CONTAS; i++) {
     contasSaldosSimular[i] = lerSaldo(i + 1);
@@ -140,9 +141,9 @@ void simular(int numAnos) {
 
   isDead(); //Verifica se ocorreu um sinal
 
-  for (int i = 0; i <= numAnos; i++) {
+  for (i = 0; i <= numAnos; i++) {
     printf("SIMULACAO: Ano %d\n=================\n", i);
-    for (int ii = 0; ii < NUM_CONTAS; ii++) {
+    for (ii = 0; ii < NUM_CONTAS; ii++) {
       if (i != 0 && contasSaldosSimular[ii] != 0) {
         contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
       }
