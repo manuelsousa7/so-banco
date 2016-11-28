@@ -125,6 +125,9 @@ void isDead() {
 * Description:  Faz uma simulacao (juros) de um numero de anos de todas as contas do banco
 *****************************************************************************************/
 void simular(int numAnos) {
+  int contasSaldosSimular[NUM_CONTAS];
+  int i,ii;
+
   /* Se houver um problema a tratar do Signal vai ocorrer um erro*/
   if (signal(SIGUSR1, handler) == SIG_ERR) {
     printf("simular: Não foi possivel tratar do sinal\n");
@@ -132,8 +135,6 @@ void simular(int numAnos) {
   }
 
 
-  int contasSaldosSimular[NUM_CONTAS];
-  int i,ii;
   //Copia dos saldos das contas
   for (i = 0; i < NUM_CONTAS; i++) {
     contasSaldosSimular[i] = lerSaldo(i + 1);
