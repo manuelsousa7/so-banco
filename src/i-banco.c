@@ -50,6 +50,7 @@ int main (int argc, char** argv) {
 
     while (1) {
         int numargs;
+        int i;
         pids pids[MAXCHILDS];
         numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
         int estado, sairAgora = 0;
@@ -61,7 +62,7 @@ int main (int argc, char** argv) {
             } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
                 sairAgora = 1;
                 //Ciclo que vai enviar um sinal individualmente para cada Processo Filho
-                for (int i = 0; i < numPids; i++) {
+                for (i = 0; i < numPids; i++) {
                     if (kill(pids[i].pid, SIGUSR1) != 0) //Verifica se ocorreu um erro ao enviar um Sinal
                         printf("%s: Erro ao enviar sinal para o Processo.\n", strcat(COMANDO_SAIR , COMANDO_AGORA));
                 }
@@ -74,7 +75,7 @@ int main (int argc, char** argv) {
             killThreadsSemaforosMutexes();
 
             /* Ciclo que vai terminar todos os Processos Filho */
-            for (int i = 0; i < numPids; i++) {
+            for (i = 0; i < numPids; i++) {
 
                 if (waitpid(pids[i].pid, &estado, 0) == -1) //Terminar Processo filho. Se ocorrer um erro vai cair no if statment
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
@@ -85,7 +86,7 @@ int main (int argc, char** argv) {
                 pids[i].estado = WIFEXITED(estado) ? 1 : -1;
             }
             printf("i-banco vai terminar.\n--\n");
-            for (int i = 0; i < numPids; i++) {
+            for (i = 0; i < numPids; i++) {
                 printf("FILHO TERMINADO (PID=%d; terminou %s)\n", pids[i].pid, (pids[i].estado > 0) ? "normalmente" : "abruptamente");
             }
             printf("--\n");
