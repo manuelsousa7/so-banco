@@ -26,6 +26,7 @@
 #include "commandlinereader.h"
 #include "parte1.h"
 #include "parte234.h"
+#include "parte4.h"
 
 /* Constantes */
 #define MAXARGS 4
@@ -173,7 +174,9 @@ int main (int argc, char** argv) {
                     printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
                     exit(EXIT_FAILURE);
                 } else if (pid == 0) { /* Criou Processo filho com sucesso */
+                    iniciaRedirecionarOutput();
                     simular(anos);
+                    pararRedirecionarOutput();
                     exit(EXIT_SUCCESS);
                 } else if (pid > 0) { /* Processo PAI */
                     pids[numPids++].pid = pid; /* Vamos guardar os PIDs de todos os processos filho que forem criados */

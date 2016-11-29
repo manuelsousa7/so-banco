@@ -231,7 +231,7 @@ void inicializarThreadsSemaforosMutexes() {
 		}
 	}
 
-	fout = open(LOG_FILE, O_CREAT | O_WRONLY | O_APPEND);
+	fout = open(LOG_FILE, O_CREAT | O_WRONLY | O_APPEND, 0666);
 
 	/* Incia Semáforos */
 	if (sem_init(&podeProd, 0, CMD_BUFFER_DIM) != 0) {

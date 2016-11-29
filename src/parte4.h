@@ -30,11 +30,14 @@ df
 #include "parte1.h"
 #include "parte234.h"
 #define LOG_FILE "log.txt"
-
+#define OUTPUT_SIZE 100
 int fout;
-
+int save_out;
+int out;
 
 void escreverLog(int comando);
 char* comandos(int comando);
+void iniciaRedirecionarOutput();
+void pararRedirecionarOutput();
 
 #endif

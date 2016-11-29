@@ -17,7 +17,7 @@ void escreverLog(int comando) {
 	if (tid == -1) {
 		printf("ERRO: syscall - SYS_gettid\n");
 	}
-	char out[100];
+	char out[OUTPUT_SIZE];
 	snprintf(out, sizeof(out), "%d: %s\n", tid, comandos(comando));
 	write(fout, out, strlen(out));
 }
@@ -40,4 +40,31 @@ char* comandos(int comando) {
 	default:
 		return "ERRO";
 	}
+}
+
+void iniciaRedirecionarOutput() {
+	char file[OUTPUT_SIZE];
+	snprintf(file, sizeof(file), "i-banco-sim-%d.txt",  getpid());
+
+	out = open(file, O_RDWR | O_CREAT | O_APPEND, 0600);
+	if (out == -1) {
+		perror(file);
+	}
+
+	save_out = dup(fileno(stdout));
+
+	if (dup2(out, fileno(stdout)) == -1) {
+		perror("cannot redirect stdout");
+	}
+}
+
+
+
+void pararRedirecionarOutput() {
+	fflush(stdout);
+	close(out);
+
+	dup2(save_out, fileno(stdout));
+
+	close(save_out);
 }
