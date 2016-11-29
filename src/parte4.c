@@ -46,15 +46,15 @@ void iniciaRedirecionarOutput() {
 	char file[OUTPUT_SIZE];
 	snprintf(file, sizeof(file), "i-banco-sim-%d.txt",  getpid());
 
-	out = open(file, O_RDWR | O_CREAT | O_APPEND, 0600);
-	if (out == -1) {
-		perror(file);
+	out = open(file, O_TRUNC | O_RDWR | O_CREAT, 0600);
+	if (out != 0) {
+		printf("ERRO: open - params: [O_TRUNC | O_RDWR | O_CREAT, 0600]\n");
 	}
 
 	save_out = dup(fileno(stdout));
 
-	if (dup2(out, fileno(stdout)) == -1) {
-		perror("cannot redirect stdout");
+	if (dup2(out, fileno(stdout)) != 0) {
+		printf("ERRO: dup2 - params: [out, fileno(stdout)]\n");
 	}
 }
 
