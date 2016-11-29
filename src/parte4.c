@@ -46,25 +46,27 @@ void iniciaRedirecionarOutput() {
 	char file[OUTPUT_SIZE];
 	snprintf(file, sizeof(file), "i-banco-sim-%d.txt",  getpid());
 
-	out = open(file, O_TRUNC | O_RDWR | O_CREAT, 0600);
-	if (out != 0) {
+	out = open(file, O_TRUNC | O_WRONLY | O_CREAT, 0600);
+
+	if (out == -1) {
 		printf("ERRO: open - params: [O_TRUNC | O_RDWR | O_CREAT, 0600]\n");
 	}
 
-	save_out = dup(fileno(stdout));
-
-	if (dup2(out, fileno(stdout)) != 0) {
+	if (dup2(out, fileno(stdout)) == -1) {
 		printf("ERRO: dup2 - params: [out, fileno(stdout)]\n");
 	}
 }
 
-
-
 void pararRedirecionarOutput() {
-	fflush(stdout);
-	close(out);
+	if (fflush(stdout) != 0) {
+		printf("ERRO: fflush - params: stdout\n");
+	}
 
-	dup2(save_out, fileno(stdout));
+	if (close(out) != 0) {
+		printf("ERRO: close - params: out\n");
+	}
 
-	close(save_out);
+	if (close(save_out) != 0) {
+		printf("ERRO: close - params: save_out\n");
+	}
 }
