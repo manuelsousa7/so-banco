@@ -25,6 +25,7 @@
 #include <string.h>
 #include "contas.h"
 #include "parte1.h"
+#include "parte4.h"
 
 /* Operações - Comandos */
 #define OP_SAIR 1
@@ -32,8 +33,8 @@
 #define OP_LERSALDO 3
 #define OP_CREDITAR 4
 #define OP_DEBITAR 5
-#define OP_TRANSFERIR 6 // Parte 3
-#define OP_SACOAZUL 7 // Parte 3
+#define OP_TRANSFERIR 6 /* Parte 3 */
+#define OP_SACOAZUL 7  /* Parte 3 */
 
 /* Operações - Comandos */
 #define NUM_TRABALHADORAS 3
@@ -51,21 +52,21 @@ typedef struct {
 	int valor;
 } comando_t;
 
-pthread_t tid[NUM_TRABALHADORAS]; // Vetor que guarda os Thread ID's de todas as tarefas
+pthread_t tid[NUM_TRABALHADORAS]; /* Vetor que guarda os Thread ID's de todas as tarefas */
 
-pthread_mutex_t semExMut;// Mutex de exclusão mutua
-pthread_mutex_t threadsContas[NUM_CONTAS];// Vetor de Mutexes que associa um Mutex a cada conta
+pthread_mutex_t semExMut;/* Mutex de exclusão mutua */
+pthread_mutex_t threadsContas[NUM_CONTAS];/* Vetor de Mutexes que associa um Mutex a cada conta */
 
 /* Parte 3 */
-pthread_cond_t cheio; // Variavel de condicao
-int comandosNoBuffer; // Guarda o numero de comandos atuais no buffer
+pthread_cond_t cheio; /* Variavel de condicao */
+int comandosNoBuffer; /* Guarda o numero de comandos atuais no buffer */
 
-sem_t podeProd, podeCons; // Semáforos do sistema Produtor - Consumidor.
+sem_t podeProd, podeCons; /* Semáforos do sistema Produtor - Consumidor. */
 
-int buff_write_idx; // Cursor que guarda o indice da proxima posisao a escrever no buffer
-int buff_read_idx;  // Cursor que guarda o indice da proxima posisao a ler no buffer
+int buff_write_idx; /* Cursor que guarda o indice da proxima posisao a escrever no buffer */
+int buff_read_idx;  /* Cursor que guarda o indice da proxima posisao a ler no buffer */
 
-comando_t cmd_buffer[CMD_BUFFER_DIM]; //Buffer Circular de comandos
+comando_t cmd_buffer[CMD_BUFFER_DIM]; /* Buffer Circular de comandos */
 
 /* Protótipos das Funções */
 void executarComando(comando_t c);

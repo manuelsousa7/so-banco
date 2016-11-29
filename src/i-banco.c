@@ -61,9 +61,9 @@ int main (int argc, char** argv) {
                 /* Sair Agora */
             } else if (numargs == 2 && strcmp(args[1], COMANDO_AGORA) == 0) {
                 sairAgora = 1;
-                //Ciclo que vai enviar um sinal individualmente para cada Processo Filho
+                /* Ciclo que vai enviar um sinal individualmente para cada Processo Filho */
                 for (i = 0; i < numPids; i++) {
-                    if (kill(pids[i].pid, SIGUSR1) != 0) //Verifica se ocorreu um erro ao enviar um Sinal
+                    if (kill(pids[i].pid, SIGUSR1) != 0) /* Verifica se ocorreu um erro ao enviar um Sinal */
                         printf("%s: Erro ao enviar sinal para o Processo.\n", strcat(COMANDO_SAIR , COMANDO_AGORA));
                 }
             } else {
@@ -77,10 +77,10 @@ int main (int argc, char** argv) {
             /* Ciclo que vai terminar todos os Processos Filho */
             for (i = 0; i < numPids; i++) {
 
-                if (waitpid(pids[i].pid, &estado, 0) == -1) //Terminar Processo filho. Se ocorrer um erro vai cair no if statment
+                if (waitpid(pids[i].pid, &estado, 0) == -1) /* Terminar Processo filho. Se ocorrer um erro vai cair no if statment */
                     printf("%s: Erro ao terminar Processo.\n", (sairAgora == 1) ? strcat(COMANDO_SAIR , COMANDO_AGORA) : COMANDO_SAIR);
-                if (WIFEXITED(estado) != 0) { //Se o processo sair com um exit corretamente (de que maneira for)
-                    if (WEXITSTATUS(estado) == 2) //Vamos verificar se o exit retornou o termino por signal
+                if (WIFEXITED(estado) != 0) { /* Se o processo sair com um exit corretamente (de que maneira for) */
+                    if (WEXITSTATUS(estado) == 2) /* Vamos verificar se o exit retornou o termino por signal */
                         printf("Simulacao terminada por signal\n");
                 }
                 pids[i].estado = WIFEXITED(estado) ? 1 : -1;
@@ -159,7 +159,7 @@ int main (int argc, char** argv) {
 
                 /* Veririca se ha comandos no buffer */
                 while (comandosNoBuffer != 0) {
-                    pthread_cond_wait(&cheio, &semExMut); //Espera
+                    pthread_cond_wait(&cheio, &semExMut); /* Espera */
                 }
 
                 pid = fork();
@@ -169,14 +169,14 @@ int main (int argc, char** argv) {
                     printf("ERRO: pthread_mutex_unlock - &semExMut\n");
                 }
 
-                if (pid < 0) { // Erro ao fazer fork do processo PAI
+                if (pid < 0) { /* Erro ao fazer fork do processo PAI */
                     printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
                     exit(EXIT_FAILURE);
-                } else if (pid == 0) { //Criou Processo filho com sucesso
+                } else if (pid == 0) { /* Criou Processo filho com sucesso */
                     simular(anos);
                     exit(EXIT_SUCCESS);
-                } else if (pid > 0) { // Processo PAI
-                    pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
+                } else if (pid > 0) { /* Processo PAI */
+                    pids[numPids++].pid = pid; /* Vamos guardar os PIDs de todos os processos filho que forem criados */
                 }
             }
             continue;

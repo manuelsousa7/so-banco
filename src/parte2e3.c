@@ -143,7 +143,7 @@ void executarComando(comando_t c) {
 		}
 		break;
 	case OP_SAIR:
-		pthread_exit(NULL); //Termina tarefa - ESTA FUNCAO TEM SEMPRE SUCESSO
+		pthread_exit(NULL); /* Termina tarefa - ESTA FUNCAO TEM SEMPRE SUCESSO */
 		exit(EXIT_SUCCESS);
 		break;
 	default:
@@ -163,6 +163,7 @@ void executarComando(comando_t c) {
 *               {Consumidor} do sistema Produtor - {Consumidor}
 *****************************************************************************************/
 void *lerComandos(void *args) {
+	int comando;
 	while (1) {
 		/* Esperar */
 		if (sem_wait(&podeCons) != 0) {
@@ -173,8 +174,8 @@ void *lerComandos(void *args) {
 			printf("ERRO: pthread_mutex_lock - &semExMut\n");
 		}
 		comando_t consumido = cmd_buffer[buff_read_idx];
-		buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de leitura
-
+		buff_read_idx = (buff_read_idx + 1) % CMD_BUFFER_DIM; /* Incrementa / Reinicia cursor que guarda indice de leitura */
+		comando = consumido.operacao;
 		/* Abrir */
 		if (pthread_mutex_unlock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_unlock - &semExMut\n");
@@ -187,15 +188,19 @@ void *lerComandos(void *args) {
 		/* Após adquirir o comando a executar do buffer circular de dados, vamos executa-lo */
 
 		executarComando(consumido);
-		comandosNoBuffer--; //Decrementa numero de comandos no contador
+		comandosNoBuffer--; /* Decrementa numero de comandos no contador */
 
 		/* Fechar */
 		if (pthread_mutex_lock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_lock - &semExMut\n");
 		}
+
+		escreverLog(comando);
+
 		if (comandosNoBuffer == 0) {
 			pthread_cond_signal(&cheio);
 		}
+
 		/* Abrir */
 		if (pthread_mutex_unlock(&semExMut) != 0) {
 			printf("ERRO: pthread_mutex_lock - &semExMut\n");
@@ -234,11 +239,14 @@ void inicializarThreadsSemaforosMutexes() {
 	}
 
 	/* Inicia Variavel de Condicão */
-	pthread_cond_init(&cheio, NULL);
+	if (pthread_cond_init(&cheio, NULL) != 0) {
+		printf("ERRO: pthread_cond_init - params: [&cheio, NULL]\n");
+	}
 
 	/* Inicia Tarefas */
 	for (i = 0; i < NUM_TRABALHADORAS ; i++) {
-		int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL); // Cria tarefa e guarda o Thread ID num vetor, e atribui a função lerComandos à tarefa
+		/* Cria tarefa e guarda o Thread ID num vetor, e atribui a função lerComandos à tarefa */
+		int err = pthread_create(&(tid[i]), NULL, &lerComandos, NULL);
 		if (err != 0)
 			printf("Falha ao criar Thread :[%s]\n", strerror(err));
 	}
@@ -271,8 +279,8 @@ void produtor(int idConta, int idConta2, int valor, int OP) {
 	cmd_buffer[buff_write_idx].valor = valor;
 	cmd_buffer[buff_write_idx].idConta = idConta;
 	cmd_buffer[buff_write_idx].idConta2 = idConta2;
-	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM; // Incrementa / Reinicia cursor que guarda indice de escrita
-	comandosNoBuffer++; //Incrementa numero de comandos no contador
+	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM; /* Incrementa / Reinicia cursor que guarda indice de escrita */
+	comandosNoBuffer++; /* Incrementa numero de comandos no contador */
 
 	/* Abrir */
 	if (pthread_mutex_unlock(&semExMut) != 0) {

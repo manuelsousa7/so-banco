@@ -21,7 +21,7 @@
 
 int contasSaldos[NUM_CONTAS];
 
-int flag = -1; //Flag que vai ser usada para tratamento de signals
+int flag = -1; /* Flag que vai ser usada para tratamento de signals */
 
 int contaExiste(int idConta) {
   return (idConta > 0 && idConta <= NUM_CONTAS);
@@ -34,6 +34,10 @@ void inicializarContas() {
 }
 
 int debitar(int idConta, int valor) {
+  atrasar();
+  atrasar();
+  atrasar();
+  atrasar();
   atrasar();
   if (!contaExiste(idConta))
     return -1;
@@ -80,7 +84,7 @@ int transferirSacoAzul(int idConta) {
 *****************************************************************************************/
 int transferir(int idConta1, int idConta2, int valor) {
   atrasar();
-  if (contasSaldos[idConta1 - 1] < valor) //Verifica se ha saldo disponivel
+  if (contasSaldos[idConta1 - 1] < valor) /* Verifica se ha saldo disponivel */
     return -1;
   contasSaldos[idConta1 - 1] -= valor;
   contasSaldos[idConta2 - 1] += valor;
@@ -112,7 +116,7 @@ void handler() {
 *****************************************************************************************/
 void isDead() {
   if (flag == 1) {
-    exit(2); //Houve Signal
+    exit(2); /* Houve Signal */
   }
 }
 
@@ -135,12 +139,12 @@ void simular(int numAnos) {
   }
 
 
-  //Copia dos saldos das contas
+  /* Copia dos saldos das contas */
   for (i = 0; i < NUM_CONTAS; i++) {
     contasSaldosSimular[i] = lerSaldo(i + 1);
   }
 
-  isDead(); //Verifica se ocorreu um sinal
+  isDead(); /* Verifica se ocorreu um sinal */
 
   for (i = 0; i <= numAnos; i++) {
     printf("SIMULACAO: Ano %d\n=================\n", i);
@@ -150,7 +154,7 @@ void simular(int numAnos) {
       }
       printf("Conta %d, Saldo %d\n", ii + 1, contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
     }
-    isDead(); //Verifica se ocorreu um sinal
+    isDead(); /* Verifica se ocorreu um sinal */
     printf("\n");
   }
   exit(1);
