@@ -15,8 +15,8 @@
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#ifndef PARTE2E3_H
-#define PARTE2E3_H
+#ifndef PARTE234_H
+#define PARTE234_H
 
 #include <stdio.h>
 #include <pthread.h>

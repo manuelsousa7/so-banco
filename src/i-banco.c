@@ -25,7 +25,7 @@
 #include "contas.h"
 #include "commandlinereader.h"
 #include "parte1.h"
-#include "parte2e3.h"
+#include "parte234.h"
 
 /* Constantes */
 #define MAXARGS 4

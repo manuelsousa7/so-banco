@@ -28,8 +28,11 @@ df
 #include <sys/syscall.h>
 #include <fcntl.h>
 #include "parte1.h"
-#include "parte2e3.h"
+#include "parte234.h"
 #define LOG_FILE "log.txt"
+
+int fout;
+
 
 void escreverLog(int comando);
 char* comandos(int comando);

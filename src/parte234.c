@@ -9,7 +9,7 @@
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#include "parte2e3.h"
+#include "parte234.h"
 
 /******************************************************************************************
 * executarComando()
@@ -230,6 +230,9 @@ void inicializarThreadsSemaforosMutexes() {
 			printf("ERRO: pthread_mutex_init - params: &threadsContas[i]\n");
 		}
 	}
+
+	fout = open(LOG_FILE, O_CREAT | O_WRONLY | O_APPEND);
+
 	/* Incia Semáforos */
 	if (sem_init(&podeProd, 0, CMD_BUFFER_DIM) != 0) {
 		printf("ERRO: sem_init - params: [&podeProd, 0, CMD_BUFFER_DIM]\n");
@@ -316,6 +319,8 @@ void killThreadsSemaforosMutexes() {
 		if (err != 0)
 			printf("Falha ao criar Thread :[%s]\n", strerror(err));
 	}
+
+	close(fout);
 
 	/* Destroi Mutex geral do Produtor - Consumidor */
 	if (pthread_mutex_destroy(&semExMut) != 0) {

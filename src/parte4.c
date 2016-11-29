@@ -17,11 +17,9 @@ void escreverLog(int comando) {
 	if (tid == -1) {
 		printf("ERRO: syscall - SYS_gettid\n");
 	}
-	int fout = open(LOG_FILE, O_WRONLY | O_APPEND);
 	char out[100];
 	snprintf(out, sizeof(out), "%d: %s\n", tid, comandos(comando));
 	write(fout, out, strlen(out));
-	close(fout);
 }
 
 char* comandos(int comando) {

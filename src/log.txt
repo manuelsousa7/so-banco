@@ -22,3 +22,7 @@
 15189: creditar
 15191: debitar
 15190: debitar
+15228: debitar
+15227: creditar
+15226: creditar
+15228: creditar
