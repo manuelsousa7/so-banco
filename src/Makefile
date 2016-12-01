@@ -2,12 +2,13 @@ TARGET = i-banco
 CC = gcc
 CFLAGS = -g -Wall -pedantic -pthread
 LDFLAGS=-lpthread
+EXCLUDE = i-banco-terminal.c
 .PHONY: default all clean
 
 default: $(TARGET)
 all: default
 
-OBJECTS = $(patsubst %.c, %.o, $(wildcard *.c))
+OBJECTS = $(patsubst %.c, %.o, $(filter-out $(EXCLUDE), $(wildcard *.c)))
 HEADERS = $(wildcard *.h)
 
 %.o: %.c $(HEADERS)
