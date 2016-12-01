@@ -81,7 +81,7 @@ int arraySearch(int searchVal, int arraySize, int array[]) {
 }
 
 void escrever(int fileDescriptor,char asd[]){
-	printf("c%s\n", asd);
+	//printf("c%s\n", asd);
 	//char *fas = "debitar(2, 2): OK";
 	write(fileDescriptor,asd,BUFFER_SIZE);
 }

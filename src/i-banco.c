@@ -62,7 +62,7 @@ int main (int argc, char** argv) {
     char myfifo2[100];
     //char terminalPid[100];
     char *myfifo = "/tmp/client_to_server_fifo";
-    //unlink(myfifo);
+    unlink(myfifo);
 
     /* create the FIFO (named pipe) */
     mkfifo(myfifo, 0777);
@@ -75,7 +75,7 @@ int main (int argc, char** argv) {
     printf("Bem-vinda/o ao i-banco\n\n");
 
     while (1) {
-        printf("servidor pronto a ler\n");
+
         read(client_to_server, &comando, sizeof(comando));
         item = search(comando.terminalPid);
         printf("dasjbhasdhjbadsbhjasdjbh\n");
@@ -83,13 +83,12 @@ int main (int argc, char** argv) {
             printf("Element found: %d\n", item->data);
         } else {
             snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", comando.terminalPid);
-            //printf("%s\n", myfifo2);
+            printf("%s\n", myfifo2);
 
             mkfifo(myfifo2, 0777);
-
-            //printf("antes\n");
+            printf("antes\n");
             server_to_client = open(myfifo2, O_WRONLY);
-            //printf("apos\n");
+            printf("apos\n");
             if (server_to_client == -1) {
                 printf("ERRO\n");
             } else {

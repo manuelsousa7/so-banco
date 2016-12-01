@@ -24,128 +24,158 @@ void executarComando(comando_t c) {
 	switch (c.operacao) {
 	case OP_LERSALDO:
 		if (!contaExiste(c.idConta)) {
-			printf("A conta %d nao existe\n", c.idConta);
+			snprintf(output, sizeof(output), "A conta %d nao existe\n", c.idConta);
+			escrever(search(c.terminalPid)->data, output);
 			break;
 		}
 		/* Fechar */
 		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 
 		int saldo = lerSaldo (c.idConta);
-		if (lerSaldo(c.idConta) < 0)
-			printf("%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
-		else
-			printf("%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, saldo);
+		if (lerSaldo(c.idConta) < 0) {
+			snprintf(output, sizeof(output), "%s(%d): Erro.\n\n", COMANDO_LER_SALDO, c.idConta);
+			escrever(search(c.terminalPid)->data, output);
+		} else {
+			snprintf(output, sizeof(output), "%s(%d): O saldo da conta é %d.\n\n", COMANDO_LER_SALDO, c.idConta, saldo);
+			escrever(search(c.terminalPid)->data, output);
+		}
 
 		/* Abrir */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		break;
 
 	case OP_CREDITAR:
 		if (!contaExiste(c.idConta)) {
-			printf("A conta %d nao existe\n", c.idConta);
+			snprintf(output, sizeof(output), "A conta %d nao existe\n", c.idConta);
+			escrever(search(c.terminalPid)->data, output);
 			break;
 		}
 		/* Fechar */
 		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 
-		if (creditar (c.idConta, c.valor) < 0)
-			printf("%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
-		else
-			printf("%s(%d, %d): OK\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
+		if (creditar (c.idConta, c.valor) < 0) {
+			snprintf(output, sizeof(output), "%s(%d, %d): Erro\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
+			escrever(search(c.terminalPid)->data, output);
+		} else {
+			snprintf(output, sizeof(output), "%s(%d, %d): OK\n\n", COMANDO_CREDITAR, c.idConta, c.valor);
+			escrever(search(c.terminalPid)->data, output);
+		}
 
 		/* Abrir */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		break;
 
 	case OP_DEBITAR:
 		if (!contaExiste(c.idConta)) {
-			printf("A conta %d nao existe\n", c.idConta);
+			snprintf(output, sizeof(output), "A conta %d nao existe\n", c.idConta);
+			escrever(search(c.terminalPid)->data, output);
 			break;
 		}
 		/* Fechar */
 		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 
-		if (debitar (c.idConta, c.valor) < 0){
+		if (debitar (c.idConta, c.valor) < 0) {
 			snprintf(output, sizeof(output), "%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
-			printf("a%s\n", output);
-			escrever(search(c.terminalPid)->data,output);
+			escrever(search(c.terminalPid)->data, output);
 		} else {
 			snprintf(output, sizeof(output), "%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
-			printf("b%s\n", output);
-			escrever(search(c.terminalPid)->data,output);
+			escrever(search(c.terminalPid)->data, output);
 		}
 
 		/* Abrir */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[c.idConta-1]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 
 		break;
 	case OP_TRANSFERIR:
 		if ((!contaExiste(c.idConta) || !contaExiste(c.idConta2)) || c.idConta == c.idConta2) {
-			printf("Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.idConta2);
+			snprintf(output, sizeof(output), "Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.idConta2);
+			escrever(search(c.terminalPid)->data, output);
 			break;
 		}
 		/* Fechar Contas relativas a operacao */
 		if (pthread_mutex_lock(&threadsContas[MIN(c.idConta - 1, c.idConta2 - 1)]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[MIN(c.idConta-1, c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[MIN(c.idConta-1, c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		if (pthread_mutex_lock(&threadsContas[MAX(c.idConta - 1, c.idConta2 - 1)]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[MAX(c.idConta-1, c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[MAX(c.idConta-1, c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 
-		if (transferir(c.idConta, c.idConta2, c.valor) < 0)
-			printf("Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.idConta2);
-		else
-			printf("%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, c.idConta, c.idConta2, c.valor);
+		if (transferir(c.idConta, c.idConta2, c.valor) < 0) {
+			snprintf(output, sizeof(output), "Erro ao transferir valor da conta %d para a conta %d.\n\n", c.idConta, c.idConta2);
+			escrever(search(c.terminalPid)->data, output);
+		} else {
+			snprintf(output, sizeof(output), "%s(%d, %d, %d): OK\n\n", COMANDO_TRANSFERIR, c.idConta, c.idConta2, c.valor);
+			escrever(search(c.terminalPid)->data, output);
+		}
 
 		/* Abrir Contas relativas a operacao */
 		if (pthread_mutex_unlock(&threadsContas[MAX(c.idConta - 1, c.idConta2 - 1)]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta-1,c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta-1,c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		if (pthread_mutex_unlock(&threadsContas[MIN(c.idConta - 1, c.idConta2 - 1)]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		break;
 	case OP_SACOAZUL:
 		if (c.idConta == 1) {
-			printf("Saldo do saco azul %d\n\n", lerSaldo(1));
+			snprintf(output, sizeof(output), "Saldo do saco azul %d\n\n", lerSaldo(1));
+			escrever(search(c.terminalPid)->data, output);
 			break;
 		}
 		else if (!contaExiste(c.idConta)) {
-			printf("Erro Saco Azul\n\n");
+			snprintf(output, sizeof(output), "Erro Saco Azul\n\n");
+			escrever(search(c.terminalPid)->data, output);
 			break;
 		}
 		/* Fechar Contas relativas a operacao */
 		if (pthread_mutex_lock(&threadsContas[0]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[MIN(c.idConta-1, c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[MIN(c.idConta-1, c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_lock - &threadsContas[MAX(c.idConta-1, c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[MAX(c.idConta-1, c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 
-		if (transferirSacoAzul(c.idConta) < 0)
-			printf("Erro %s\n\n", COMANDO_SACOAZUL);
-		else
-			printf("%s OK\n\n", COMANDO_SACOAZUL);
+		if (transferirSacoAzul(c.idConta) < 0) {
+			snprintf(output, sizeof(output), "Erro %s\n\n", COMANDO_SACOAZUL);
+			escrever(search(c.terminalPid)->data, output);
+		} else {
+			snprintf(output, sizeof(output), "%s OK\n\n", COMANDO_SACOAZUL);
+			escrever(search(c.terminalPid)->data, output);
+		}
 
 
 		/* Abrir Contas relativas a operacao */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta-1,c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta-1,c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		if (pthread_mutex_unlock(&threadsContas[0]) != 0) {
-			printf("ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
+			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
+			escrever(search(c.terminalPid)->data, output);
 		}
 		break;
 	case OP_SAIR:
