@@ -30,21 +30,27 @@
 
 /* Constantes */
 #define MAXARGS 4
-#define BUFFER_SIZE 100
 
 
+int server_to_client;
+int alreadyOpened = 0;
 void sendComandToServer(int client_to_server, int server_to_client,  int idConta, int idConta2, int valor, int OP) {
     char response[BUFFER_SIZE];
+    char myfifo2[100];
     comando_t comando;
     comando.operacao = OP;
     comando.valor = valor;
     comando.idConta = idConta;
     comando.idConta2 = idConta2;
-    comando_t *pointer;
-    write(client_to_server, &comando, sizeof(pointer));
-    //read(server_to_client,*response,sizeof(response));
+    comando.terminalPid = getpid();
+    write(client_to_server, &comando, sizeof(comando));
+    printf("fodasse\n");
+    snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
+    server_to_client = open(myfifo2, O_RDONLY);
+    read(server_to_client, response, BUFFER_SIZE);
+    close(server_to_client);
+    printf("response = %s\n", response);
     //return response;
-    puts(response);
 }
 
 
@@ -62,13 +68,17 @@ int main (int argc, char** argv) {
     int numargs = 0;
     int client_to_server;
     char *myfifo = "/tmp/client_to_server_fifo";
+    //char *myfifo2 = "/tmp/server_to_client";
 
-    int server_to_client;
-    char *myfifo2 = "/tmp/server_to_client_fifo";
+
+    char myfifo2[100];
+    snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
+    printf("%s\n", myfifo2);
+
 
     client_to_server = open(myfifo, O_WRONLY);
-    server_to_client = open(myfifo2, O_RDONLY);
 
+    //printf("aaa %d %d\n", client_to_server,server_to_client);
     printf("Bem-vinda/o ao i-banco\n\n");
 
     while (1) {

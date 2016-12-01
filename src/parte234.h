@@ -34,7 +34,8 @@
 #define OP_CREDITAR 4
 #define OP_DEBITAR 5
 #define OP_TRANSFERIR 6 /* Parte 3 */
-#define OP_SACOAZUL 7  /* Parte 3 */
+#define OP_SACOAZUL 7  /* Parte 3 Avaliacao */
+#define OP_SIMULAR 8  /* Parte 3 */
 
 /* Operações - Comandos */
 #define NUM_TRABALHADORAS 3
@@ -50,6 +51,7 @@ typedef struct {
 	int idConta;
 	int idConta2;
 	int valor;
+	int terminalPid;
 } comando_t;
 
 pthread_t tid[NUM_TRABALHADORAS]; /* Vetor que guarda os Thread ID's de todas as tarefas */
@@ -72,7 +74,7 @@ comando_t cmd_buffer[CMD_BUFFER_DIM]; /* Buffer Circular de comandos */
 void executarComando(comando_t c);
 void *lerComandos(void *args);
 void inicializarThreadsSemaforosMutexes();
-void produtor(int idConta, int idConta2, int valor, int OP);
+void produtor(comando_t comando);
 void killThreadsSemaforosMutexes();
 
 #endif

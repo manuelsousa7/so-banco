@@ -10,14 +10,13 @@
 
 #include "parte4.h"
 
-
 void escreverLog(int comando) {
 	pid_t tid;
 	tid = syscall(SYS_gettid);
 	if (tid == -1) {
 		printf("ERRO: syscall - SYS_gettid\n");
 	}
-	char out[OUTPUT_SIZE];
+	char out[BUFFER_SIZE];
 	snprintf(out, sizeof(out), "%d: %s\n", tid, comandos(comando));
 	write(fout, out, strlen(out));
 }
@@ -43,7 +42,7 @@ char* comandos(int comando) {
 }
 
 void iniciaRedirecionarOutput() {
-	char file[OUTPUT_SIZE];
+	char file[BUFFER_SIZE];
 	snprintf(file, sizeof(file), "i-banco-sim-%d.txt",  getpid());
 
 	out = open(file, O_TRUNC | O_WRONLY | O_CREAT, 0600);
@@ -69,4 +68,20 @@ void pararRedirecionarOutput() {
 	if (close(save_out) != 0) {
 		printf("ERRO: close - params: save_out\n");
 	}
+}
+
+
+int arraySearch(int searchVal, int arraySize, int array[]) {
+	int i;
+	for (i = 0; i < arraySize; i++) {
+		if(array[i] == searchVal)
+			return i;
+	}
+	return -1;
+}
+
+void escrever(int fileDescriptor,char asd[]){
+	printf("c%s\n", asd);
+	//char *fas = "debitar(2, 2): OK";
+	write(fileDescriptor,asd,BUFFER_SIZE);
 }

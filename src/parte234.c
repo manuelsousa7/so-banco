@@ -20,6 +20,7 @@
 * Description:  Executa um comando que recebe como argumento (Não executa 2 comandos da mesma conta ao mesmo tempo)
 *****************************************************************************************/
 void executarComando(comando_t c) {
+	char output[100];
 	switch (c.operacao) {
 	case OP_LERSALDO:
 		if (!contaExiste(c.idConta)) {
@@ -74,10 +75,15 @@ void executarComando(comando_t c) {
 			printf("ERRO: thread_mutex_lock - &threadsContas[c.idConta-1]\n");
 		}
 
-		if (debitar (c.idConta, c.valor) < 0)
-			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
-		else
-			printf("%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
+		if (debitar (c.idConta, c.valor) < 0){
+			snprintf(output, sizeof(output), "%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
+			printf("a%s\n", output);
+			escrever(search(c.terminalPid)->data,output);
+		} else {
+			snprintf(output, sizeof(output), "%s(%d, %d): OK\n\n", COMANDO_DEBITAR, c.idConta, c.valor);
+			printf("b%s\n", output);
+			escrever(search(c.terminalPid)->data,output);
+		}
 
 		/* Abrir */
 		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
@@ -267,7 +273,7 @@ void inicializarThreadsSemaforosMutexes() {
 * Description:  Acrescenta novo comando a executar no buffer circular de dados
 *               {Produtor} do sistema {Produtor} - Consumidor
 *****************************************************************************************/
-void produtor(int idConta, int idConta2, int valor, int OP) {
+void produtor(comando_t comando) {
 
 	/* Esperar */
 	if (sem_wait(&podeProd) != 0) {
@@ -278,10 +284,7 @@ void produtor(int idConta, int idConta2, int valor, int OP) {
 		printf("ERRO: pthread_mutex_lock - &semExMut\n");
 	}
 
-	cmd_buffer[buff_write_idx].operacao = OP;
-	cmd_buffer[buff_write_idx].valor = valor;
-	cmd_buffer[buff_write_idx].idConta = idConta;
-	cmd_buffer[buff_write_idx].idConta2 = idConta2;
+	cmd_buffer[buff_write_idx] = comando;
 	buff_write_idx = (buff_write_idx + 1) % CMD_BUFFER_DIM; /* Incrementa / Reinicia cursor que guarda indice de escrita */
 	comandosNoBuffer++; /* Incrementa numero de comandos no contador */
 
@@ -308,9 +311,14 @@ void produtor(int idConta, int idConta2, int valor, int OP) {
 *****************************************************************************************/
 void killThreadsSemaforosMutexes() {
 	int i;
+	comando_t sair;
+	sair.idConta = -1;
+	sair.idConta2 = -1;
+	sair.valor = -1;
+	sair.operacao = OP_SAIR;
 	/* Percorre as tarefas todas e força para dar exit */
 	for (i = 0; i < NUM_TRABALHADORAS ; i++) {
-		produtor(-1, -1, -1, OP_SAIR);
+		produtor(sair);
 	}
 
 	/* Sincroniza as tarefas todas */

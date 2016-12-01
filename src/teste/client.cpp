@@ -20,6 +20,7 @@ int main()
    /* write str to the FIFO */
    client_to_server = open(myfifo, O_WRONLY);
    server_to_client = open(myfifo2, O_RDONLY);
+   printf("aaa %d %d\n", client_to_server,server_to_client);
    write(client_to_server, str, sizeof(str));
 
    perror("Write:"); //Very crude error check

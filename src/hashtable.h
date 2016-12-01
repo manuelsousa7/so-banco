@@ -1,5 +1,5 @@
 /******************************************************************************************
-* File Name:    parte4.h
+* File Name:    hashtable.h
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
@@ -18,30 +18,26 @@ df
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#ifndef PARTE4_H
-#define PARTE4_H
+#ifndef HASHTABLE_H
+#define HASHTABLE_H
 
 #include <stdio.h>
-#include <pthread.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/syscall.h>
-#include <fcntl.h>
-#include "parte234.h"
-#include "parte1.h"
-#include "hashtable.h"
-#define LOG_FILE "log.txt"
-#define BUFFER_SIZE 100
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#define SIZE 20
 
-int fout;
-int save_out;
-int out;
+struct DataItem {
+	int data;
+	int key;
+};
 
+struct DataItem* hashArray[SIZE];
+struct DataItem* dummyItem;
+struct DataItem* item;
 
-void escreverLog(int comando);
-char* comandos(int comando);
-void iniciaRedirecionarOutput();
-void pararRedirecionarOutput();
-void escrever(int fileDescriptor,char asd[]);
+struct DataItem *search(int key);
+void insert(int key, int data);
+struct DataItem* delete(struct DataItem* item);
 
 #endif

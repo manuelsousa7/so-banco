@@ -31,6 +31,8 @@
 #include "parte1.h"
 #include "parte234.h"
 #include "parte4.h"
+#include "hashtable.h"
+
 
 /* Constantes */
 #define MAXARGS 4
@@ -46,36 +48,68 @@
 *****************************************************************************************/
 int main (int argc, char** argv) {
     comando_t comando;
+    //int terminals[100];
+    //int nterminais = 0;
+    dummyItem = (struct DataItem*) malloc(sizeof(struct DataItem));
+    dummyItem->data = -1;
+    dummyItem->key = -1;
+
     inicializarContas();
     inicializarThreadsSemaforosMutexes();
 
     int client_to_server;
-    char *myfifo = "/tmp/client_to_server_fifo";
-
     int server_to_client;
-    char *myfifo2 = "/tmp/server_to_client_fifo";
+    char myfifo2[100];
+    //char terminalPid[100];
+    char *myfifo = "/tmp/client_to_server_fifo";
+    //unlink(myfifo);
 
     /* create the FIFO (named pipe) */
-    mkfifo(myfifo, 0666);
-    mkfifo(myfifo2, 0666);
+    mkfifo(myfifo, 0777);
+
+    //char *myfifo2 = "/tmp/client_to_server_fifo";
 
     /* open, read, and display the message from the FIFO */
     client_to_server = open(myfifo, O_RDONLY);
-    server_to_client = open(myfifo2, O_WRONLY);
-
+    printf("aaa %d\n", client_to_server);
     printf("Bem-vinda/o ao i-banco\n\n");
 
     while (1) {
-
+        printf("servidor pronto a ler\n");
         read(client_to_server, &comando, sizeof(comando));
-        printf("%d\n",comando.idConta);
+        item = search(comando.terminalPid);
+        printf("dasjbhasdhjbadsbhjasdjbh\n");
+        if (item != NULL) {
+            printf("Element found: %d\n", item->data);
+        } else {
+            snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", comando.terminalPid);
+            //printf("%s\n", myfifo2);
+
+            mkfifo(myfifo2, 0777);
+
+            //printf("antes\n");
+            server_to_client = open(myfifo2, O_WRONLY);
+            //printf("apos\n");
+            if (server_to_client == -1) {
+                printf("ERRO\n");
+            } else {
+                printf("inseriu\n");
+                insert(comando.terminalPid, server_to_client);
+            }
+        }
+
+        if (comando.operacao == OP_SIMULAR) {
+
+        } else {
+            produtor(comando);
+        }
+        printf("fim do while\n");
+        //printf("%d\n", comando.idConta);
         // numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
 
     }
-
+    printf("VAI SAIR");
     close(client_to_server);
-    close(server_to_client);
 
     unlink(myfifo);
-    unlink(myfifo2);
 }
