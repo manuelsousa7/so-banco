@@ -56,11 +56,9 @@ void sendComandToServer(int client_to_server , int idConta, int idConta2, int va
     comando.terminalPid = getpid();
 
     strcpy(comando.path, myfifo2);
-    printf("comando.path %s\n", comando.path);
 
     write(client_to_server, &comando, sizeof(comando));
 
-    //printf("\n");
 
     if (alreadyOpened == 0) {
         server_to_client = open(comando.path, O_RDONLY);
@@ -69,20 +67,17 @@ void sendComandToServer(int client_to_server , int idConta, int idConta2, int va
 
 
     if ((flag != 1) && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
-        printf("asdasddasada %d\n", comando.operacao);
         read(server_to_client, response, BUFFER_SIZE);
         printf("%s", response);
-        //close(server_to_client);
     }
     time(&end_t);
     diff_t = difftime(end_t, start_t);
-    if(flag == 1 && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)){
+    if(flag == 1 && (comando.operacao != OP_SAIRTERMINAL)){
         printf("O PIPE servidor foi fechado :( \n");
     }
     if(flag != 1 && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)){
         printf("Tempo de execucao %.3f segundos\n", diff_t);
     }
-    //return response;
 }
 
 
@@ -102,19 +97,16 @@ int main (int argc, char** argv) {
     char *myfifo;
     if (argc == 2) {
         myfifo = argv[1];
-        printf("asddasads\n");
     } else {
         myfifo = "i-banco-pipe";
     }
     printf("%s %d\n", myfifo, argc);
-    //char *myfifo2 = "/tmp/server_to_client";
 
     client_to_server = open(myfifo, O_WRONLY);
 
     snprintf(myfifo2, sizeof(myfifo2), "%s%d", "server_to_client_fifo_", getpid());
     mkfifo(myfifo2, 0666);
 
-    //printf("aaa %d %d\n", client_to_server,server_to_client);
     printf("Bem-vinda/o ao i-banco\n\n");
 
     while (1) {
@@ -136,10 +128,6 @@ int main (int argc, char** argv) {
             } else {
                 sendComandToServer(client_to_server, -1, -1, -1, OP_SAIR);
             }
-
-            //close(client_to_server);
-            //close(server_to_client);
-            //exit(EXIT_SUCCESS);
 
         }
         else if (numargs == 0)

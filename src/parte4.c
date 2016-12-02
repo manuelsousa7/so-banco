@@ -70,8 +70,6 @@ void pararRedirecionarOutput() {
 }
 
 
-void escrever(int fileDescriptor,char asd[]){
-	//printf("c%s\n", asd);
-	//char *fas = "debitar(2, 2): OK";
-	write(fileDescriptor,asd,BUFFER_SIZE);
+void escrever(int fileDescriptor, char asd[]) {
+	write(fileDescriptor, asd, BUFFER_SIZE);
 }

@@ -39,10 +39,6 @@
 #define BUFFER_SIZE 100
 
 
-void han() {
-    printf("asdads\n");
-}
-
 /******************************************************************************************
 * main()
 *
@@ -55,8 +51,7 @@ int main (int argc, char** argv) {
     pids pids[MAXCHILDS];
     int numPids = 0;
     int i;
-    //int terminals[100];
-    //int nterminais = 0;
+
     dummyItem = (struct DataItem*) malloc(sizeof(struct DataItem));
     dummyItem->data = -1;
     dummyItem->key = -1;
@@ -66,46 +61,31 @@ int main (int argc, char** argv) {
 
     int client_to_server;
     int server_to_client;
-    //char myfifo2[100];
-    char fifoDelete[100];
-    //char terminalPid[100];
+
     char *myfifo = "i-banco-pipe";
     if (unlink(myfifo) == -1) {
-        printf("ajbdshajsbhdajbhds\n");
+        printf("Erro\n");
     }
 
     /* create the FIFO (named pipe) */
     mkfifo(myfifo, 0666);
 
-    //char *myfifo2 = "/tmp/client_to_server_fifo";
-
     /* open, read, and display the message from the FIFO */
     client_to_server = open(myfifo, O_RDONLY);
-    //printf("aaa %d\n", client_to_server);
+
     printf("Bem-vinda/o ao i-banco\n\n");
 
     while (1) {
-        printf("apos while\n");
-        //display();
         while (read(client_to_server, &comando, sizeof(comando)) <= 0);
 
 
         item = search(comando.terminalPid);
-        printf("dasjbhasdhjbadsbhjasdjbh %d\n", comando.terminalPid);
 
         if (item == NULL) {
-            printf("item==NULL ultrapassado\n");
-            //snprintf(myfifo2, sizeof(myfifo2), "%s%d", "server_to_client_fifo_", comando.terminalPid);
-            //printf("comando.path%s\n", (comando.path));
-
-            //mkfifo(comando.path, 0777);
-            printf("antes\n");
             server_to_client = open(comando.path, O_WRONLY);
-            printf("apos\n");
             if (server_to_client == -1) {
                 printf("ERRO\n");
             } else {
-                printf("inseriu %d\n", server_to_client);
                 insert(comando.terminalPid, server_to_client);
             }
         }
@@ -123,7 +103,7 @@ int main (int argc, char** argv) {
 
                 /* Veririca se ha comandos no buffer */
                 while (comandosNoBuffer != 0) {
-                    pthread_cond_wait(&cheio, &semExMut); //Espera
+                    pthread_cond_wait(&cheio, &semExMut);
                 }
 
                 pid = fork();
@@ -133,17 +113,16 @@ int main (int argc, char** argv) {
                     printf("ERRO: pthread_mutex_unlock - &semExMut\n");
                 }
 
-                if (pid < 0) { // Erro ao fazer fork do processo PAI
+                if (pid < 0) { // Erro ao fazer fork do processo PAI */
                     printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
                     exit(EXIT_FAILURE);
-                } else if (pid == 0) { //Criou Processo filho com sucesso
+                } else if (pid == 0) { /* Criou Processo filho com sucesso */
                     iniciaRedirecionarOutput();
                     simular(anos);
                     pararRedirecionarOutput();
                     exit(EXIT_SUCCESS);
-                } else if (pid > 0) { // Processo PAI
-                    pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
-                    //escrever(search(comando.terminalPid)->data, "simulado");
+                } else if (pid > 0) { /* Processo PAI */
+                    pids[numPids++].pid = pid; /* Vamos guardar os PIDs de todos os processos filho que forem criados */
                 }
             }
         } else if (comando.operacao == OP_SAIR || comando.operacao == OP_SAIRAGORA) {
@@ -180,28 +159,14 @@ int main (int argc, char** argv) {
             printf("--\n");
             close(client_to_server);
             unlink(myfifo);
+            /* Libertar tudo */
             exit(EXIT_SUCCESS);
         } else if (comando.operacao == OP_SAIRTERMINAL) {
-            printf("terminal saiu1\n");
-            //snprintf(fifoDelete, sizeof(fifoDelete), "%s%d", "/tmp/server_to_client_fifo_" , comando.terminalPid);
-            printf("terminal saiu2 %d\n", search(comando.terminalPid)->data);
-
             close(search(comando.terminalPid)->data);
-            printf("terminal saiu3 %s %d\n", fifoDelete, search(comando.terminalPid)->data);
-
-
             delete(search(comando.terminalPid));
-            //asd
-
-            //close(comando.idConta); // termina client_to_server vindo do terminal (idConta e usado apenas para transportar)
-            printf("terminal saiuu\n");
         } else {
             produtor(comando);
         }
-        //printf("fim do while\n");
-        //printf("%d\n", comando.idConta);
-        // numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
 
     }
-    printf("fim dos fins\n");
 }
