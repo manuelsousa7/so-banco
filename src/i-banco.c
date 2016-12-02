@@ -113,7 +113,7 @@ int main (int argc, char** argv) {
                     printf("ERRO: pthread_mutex_unlock - &semExMut\n");
                 }
 
-                if (pid < 0) { // Erro ao fazer fork do processo PAI */
+                if (pid < 0) { /* Erro ao fazer fork do processo PAI */
                     printf("%s: ERRO ao criar processo.ID do fork %d\n", COMANDO_SIMULAR, pid);
                     exit(EXIT_FAILURE);
                 } else if (pid == 0) { /* Criou Processo filho com sucesso */

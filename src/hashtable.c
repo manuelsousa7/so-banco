@@ -30,13 +30,12 @@ struct DataItem *search(int key) {
 }
 
 void insert(int key, int data) {
-
+	int hashIndex = hashCode(key);
 	struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
 	item->data = data;
 	item->key = key;
 
 	/* get the hash */
-	int hashIndex = hashCode(key);
 
 	/* move in array until an empty or deleted cell */
 	while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->key != -1) {

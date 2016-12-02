@@ -12,11 +12,11 @@
 
 void escreverLog(int comando) {
 	pid_t tid;
+	char out[BUFFER_SIZE];
 	tid = syscall(SYS_gettid);
 	if (tid == -1) {
 		printf("ERRO: syscall - SYS_gettid\n");
 	}
-	char out[BUFFER_SIZE];
 	snprintf(out, sizeof(out), "%d: %s\n", tid, comandos(comando));
 	write(fout, out, strlen(out));
 }
