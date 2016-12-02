@@ -71,7 +71,7 @@ int main () {
     mkfifo(myfifo, 0666);
 
     /* open, read, and display the message from the FIFO */
-    client_to_server = open(myfifo, O_RDONLY);
+    client_to_server = open(myfifo, O_RDONLY | O_CREAT);
 
     if (client_to_server == -1) {
         printf("ERRO open(myfifo, O_RDONLY)\n" );
