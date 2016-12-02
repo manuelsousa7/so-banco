@@ -36,6 +36,8 @@ int alreadyOpened = 0;
 char myfifo2[BUFFER_SIZE];
 int sigpipe = 0;
 
+
+/* tratamento do signal SIGPIPE que vai ser usada caso o i-banco nao esteja a funcionar */
 void tratamentoSigPipe() {
     sigpipe = 1;
 }
@@ -49,7 +51,7 @@ void sendComandToServer(int client_to_server , int idConta, int idConta2, int va
     time_t start_t, end_t;
     double diff_t;
     char response[BUFFER_SIZE];
-    time(&start_t);
+    time(&start_t); /* conta o tempo de execucao */
 
     comando_t comando;
     comando.operacao = OP;
@@ -60,18 +62,21 @@ void sendComandToServer(int client_to_server , int idConta, int idConta2, int va
 
     strcpy(comando.path, myfifo2);
 
+    /* envia o comado para i i-banco */
     write(client_to_server, &comando, sizeof(comando));
 
+    /* Se nunca tiver aberto o pipe entao falo-a. Apenas faz este processo uma vez */
     if (alreadyOpened == 0) {
         server_to_client = open(comando.path, O_RDONLY);
         alreadyOpened++;
     }
 
     if ((sigpipe != 1) && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
+        /* recebe a respota (output) do i-banco */
         read(server_to_client, response, BUFFER_SIZE);
         printf("%s", response);
     }
-    time(&end_t);
+    time(&end_t);/* para de contar o tempo de execucao */
     diff_t = difftime(end_t, start_t);
     if (sigpipe == 1 && (comando.operacao != OP_SAIRTERMINAL)) {
         printf("O PIPE servidor foi fechado :( \n\n");

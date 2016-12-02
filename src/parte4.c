@@ -51,19 +51,21 @@ void iniciaRedirecionarOutput() {
 	if (snprintf(file, sizeof(file), "i-banco-sim-%d.txt",  getpid()) < 0) {
 		printf("ERRO: snprintf\n");
 	}
-
+	/* abre ficheiro para redirecionar output das simulacoes */
 	out = open(file, O_TRUNC | O_WRONLY | O_CREAT, 0666);
 
 	if (out == -1) {
 		printf("ERRO: open - params: [O_TRUNC | O_RDWR | O_CREAT, 0666]\n");
 	}
-
+	/* redireciona output */
 	if (dup2(out, fileno(stdout)) == -1) {
 		printf("ERRO: dup2 - params: [out, fileno(stdout)]\n");
 	}
 }
 
 void pararRedirecionarOutput() {
+	/* fechar tudo */
+
 	if (fflush(stdout) != 0) {
 		printf("ERRO: fflush - params: stdout\n");
 	}
@@ -77,8 +79,8 @@ void pararRedirecionarOutput() {
 	}
 }
 
-
 void escrever(int fileDescriptor, char eOutput[]) {
+	/* escreve no i-banco-terminal correspondente ao filedescriptor */
 	if (write(fileDescriptor, eOutput, BUFFER_SIZE) < -1) {
 		printf("ERRO: write - params: [fileDescriptor,eOutput,BUFFER_SIZE]\n");
 	}
