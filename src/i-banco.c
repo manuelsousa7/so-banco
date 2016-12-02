@@ -86,17 +86,16 @@ int main (int argc, char** argv) {
 
         read(client_to_server, &comando, sizeof(comando));
         item = search(comando.terminalPid);
-        printf("dasjbhasdhjbadsbhjasdjbh %d %s\n",comando.terminalPid,item);
+        printf("dasjbhasdhjbadsbhjasdjbh\n");
 
         if (item == NULL) {
-            printf("lalalalalaallaalallaal\n");
             snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", comando.terminalPid);
             //printf("%s\n", myfifo2);
 
             mkfifo(myfifo2, 0777);
-            printf("antes %s\n",myfifo2);
+            //printf("antes\n");
             server_to_client = open(myfifo2, O_WRONLY);
-            printf("apos\n");
+            //printf("apos\n");
             if (server_to_client == -1) {
                 printf("ERRO\n");
             } else {

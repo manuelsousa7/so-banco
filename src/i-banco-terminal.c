@@ -35,7 +35,7 @@
 
 int server_to_client;
 int alreadyOpened = 0;
-void sendComandToServer(int client_to_server, int server_to_client,  int idConta, int idConta2, int valor, int OP) {
+void sendComandToServer(int client_to_server ,int idConta, int idConta2, int valor, int OP) {
     time_t start_t, end_t;
     double diff_t;
     char response[BUFFER_SIZE];
@@ -51,15 +51,15 @@ void sendComandToServer(int client_to_server, int server_to_client,  int idConta
 
     printf("\n");
 
-    if(alreadyOpened == 0){
+    if (alreadyOpened == 0) {
         snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
         server_to_client = open(myfifo2, O_RDONLY);
         alreadyOpened++;
     }
 
 
-    if ((comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL))) {
-        printf("asdasddasada %d\n",comando.operacao);
+    if ((comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
+        printf("asdasddasada %d\n", comando.operacao);
         read(server_to_client, response, BUFFER_SIZE);
         printf("%s", response);
         //close(server_to_client);
@@ -114,9 +114,9 @@ int main (int argc, char** argv) {
             }
 
             if (sairAgora == 1) {
-                sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_SAIRAGORA);
+                sendComandToServer(client_to_server, -1, -1, -1, OP_SAIRAGORA);
             } else {
-                sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_SAIR);
+                sendComandToServer(client_to_server, -1, -1, -1, OP_SAIR);
             }
 
             //close(client_to_server);
@@ -134,7 +134,7 @@ int main (int argc, char** argv) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_DEBITAR);
                 continue;
             }
-            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, atoi(args[2]), OP_DEBITAR);
+            sendComandToServer(client_to_server, atoi(args[1]), -1, atoi(args[2]), OP_DEBITAR);
         }
 
         /* Creditar */
@@ -144,7 +144,7 @@ int main (int argc, char** argv) {
                 continue;
             }
 
-            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, atoi(args[2]), OP_CREDITAR);
+            sendComandToServer(client_to_server, atoi(args[1]), -1, atoi(args[2]), OP_CREDITAR);
         }
 
         /* Ler Saldo */
@@ -153,7 +153,7 @@ int main (int argc, char** argv) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_LER_SALDO);
                 continue;
             }
-            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, -1, OP_LERSALDO);
+            sendComandToServer(client_to_server, atoi(args[1]), -1, -1, OP_LERSALDO);
         }
 
         /* Tranferir */
@@ -162,7 +162,7 @@ int main (int argc, char** argv) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_TRANSFERIR);
                 continue;
             }
-            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), atoi(args[2]), atoi(args[3]), OP_TRANSFERIR);
+            sendComandToServer(client_to_server, atoi(args[1]), atoi(args[2]), atoi(args[3]), OP_TRANSFERIR);
         }
         /* terminal-sair */
         else if (strcmp(args[0], COMANDO_SAIRTERMINAL) == 0) {
@@ -170,12 +170,12 @@ int main (int argc, char** argv) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SAIRTERMINAL);
                 continue;
             }
-            sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_SAIRTERMINAL);
+            sendComandToServer(client_to_server, -1, -1, -1, OP_SAIRTERMINAL);
             exit(EXIT_SUCCESS);
         }
         /* Simular */
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {
-            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, -1, OP_SIMULAR);
+            sendComandToServer(client_to_server, atoi(args[1]), -1, -1, OP_SIMULAR);
             continue;
         } else {
             printf("Comando desconhecido. Tente de novo.\n");
