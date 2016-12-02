@@ -3,18 +3,9 @@
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
-* SYNOPSIS:     kjfsdjksdfjnksdfnjksfdjnkdfsnjksdfkndjsfe todas as operações relacionadas com contas
-*               #include "parte1.h"gdfgdfgfdgdf
-gdf
-g
-fd
-gfd
-g
-df
-g
-df
- - Prototipos das funcoesdfsdfdsfsdfsfsdf da parte 1 - Defines (macros) dos comandos
-* DESCRIPTION:  Defines (macros) e Prototipos das funcoes da parte 2 e 3 (tarefas)
+* SYNOPSIS:     #include <stdio.h> - I/O regular
+*				#include <stdlib.h> - mallocs e frees
+* DESCRIPTION:  Defines (macros) e Prototipos das funcoes da hashtable usada no i-banco
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
@@ -22,24 +13,24 @@ df
 #define HASHTABLE_H
 
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#define SIZE 20
 
+/* Dimensao da Hashtable - Equivalente a 50 terminais*/
+#define SIZE 50
+
+/* Estrutura de dados da hashtable */
 struct DataItem {
-	int data;
-	int key;
+	int data; /* Guarda o descritor do fiheiro */
+	int key; /* key - sera a chave da hashtable, que sera o pid de cada i-banco-terminal */
 };
 
-struct DataItem* hashArray[SIZE];
-struct DataItem* dummyItem;
-struct DataItem* item;
-
+struct DataItem* hashArray[SIZE]; /* Hashtabl aka Tabela de Dispersao */
+struct DataItem* dummyItem; /* item que e atribuido quando se remove algo da hastable */
+struct DataItem* item; /* variavel que vai receber conteudo retornado pelo search() */
 
 void display();
 struct DataItem *search(int key);
 void insert(int key, int data);
 struct DataItem* delete(struct DataItem* item);
-
+void freeHash() ;
 #endif

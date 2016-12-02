@@ -1,7 +1,14 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdbool.h>
+/******************************************************************************************
+* File Name:    hashtable.c
+* Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
+* Revision:
+* NAME:         Banco - IST/SO - 2016/2017 1º Semestre
+* SYNOPSIS:     #include <hashtable.h> - Prototipos e estruruas da funcoes da hashtable
+*
+* DESCRIPTION:  Funcoes da hashtable utilizadas no i-banco
+* DIAGNOSTICS:  OK
+*****************************************************************************************/
+
 #include "hashtable.h"
 
 
@@ -30,12 +37,11 @@ struct DataItem *search(int key) {
 }
 
 void insert(int key, int data) {
+	/* obtem a hash */
 	int hashIndex = hashCode(key);
 	struct DataItem *item = (struct DataItem*) malloc(sizeof(struct DataItem));
 	item->data = data;
 	item->key = key;
-
-	/* get the hash */
 
 	/* move in array until an empty or deleted cell */
 	while (hashArray[hashIndex] != NULL && hashArray[hashIndex]->key != -1) {
@@ -63,6 +69,17 @@ void display() {
 	printf("\n");
 }
 
+
+void freeHash() {
+	int i = 0;
+
+	for (i = 0; i < SIZE; i++) {
+		if (hashArray[i] != NULL)
+			free(hashArray[i]);
+	}
+}
+
+
 struct DataItem* delete(struct DataItem* item) {
 	int key = item->key;
 
@@ -88,4 +105,4 @@ struct DataItem* delete(struct DataItem* item) {
 	}
 
 	return NULL;
-	}
+}

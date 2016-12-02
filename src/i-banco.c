@@ -4,18 +4,22 @@
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     #include <stdio.h> - I/O regular
-                #include <signal.h> - signal(), kill()
-                #include <unistd.h> - fork()
-                #include <sys/wait.h> - waitpid()
-                #include "contas.h" - Prototipos de todas as operações relacionadas com contas
-                #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
-                #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
-                #include "parte2e3.h" - Prototipos e Estruturas usadas na entrega 2 e 3
-* DESCRIPTION:  funcao main (i-banco)
+*               #include <signal.h> - signal(), kill()
+*               #include <unistd.h> - fork()
+*               #include <sys/wait.h> - waitpid()
+*               #include <fcntl.h> -
+*               #include <sys/stat.h> -
+*               #include "contas.h" - Prototipos de todas as operações relacionadas com contas
+*               #include "commandlinereader.h" - Prototipos das funcoes de leitura dos comandos
+*               #include "parte1.h" - Prototipos das funcoes da parte1 - Defines (macros) dos comandos
+*               #include "parte234.h" - Prototipos das funcoes da parte 2,3 e 4
+*               #include "parte4.h" - Prototipos de funcoes apenas da parte 4
+*               #include "hashtable.h" - Prototipos e Estruturas da hashtable usada
+* DESCRIPTION:  funcao main Servidor (i-banco)
 * DIAGNOSTICS:  tested
 * USAGE:        make clean
                 make all
-                make run
+                make run-servidor
 *****************************************************************************************/
 
 #include <stdio.h>
@@ -23,9 +27,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <fcntl.h>
-#include <stdio.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include "contas.h"
 #include "commandlinereader.h"
 #include "parte1.h"
@@ -46,12 +48,16 @@
 * Returns: int  0
 * Description:  Leitura dos comandos do banco e criação de processos nas simulações
 *****************************************************************************************/
-int main (int argc, char** argv) {
+int main () {
     comando_t comando;
     pids pids[MAXCHILDS];
     int numPids = 0;
     int i;
+    int client_to_server;
+    int server_to_client;
+    char *myfifo = "i-banco-pipe";
 
+    /* Inicilizacao do Item atribuido quando se e eliminada uma entrada da hashtable */
     dummyItem = (struct DataItem*) malloc(sizeof(struct DataItem));
     dummyItem->data = -1;
     dummyItem->key = -1;
@@ -59,13 +65,7 @@ int main (int argc, char** argv) {
     inicializarContas();
     inicializarThreadsSemaforosMutexes();
 
-    int client_to_server;
-    int server_to_client;
-
-    char *myfifo = "i-banco-pipe";
-    if (unlink(myfifo) == -1) {
-        printf("Erro\n");
-    }
+    unlink(myfifo);
 
     /* create the FIFO (named pipe) */
     mkfifo(myfifo, 0666);
@@ -73,7 +73,9 @@ int main (int argc, char** argv) {
     /* open, read, and display the message from the FIFO */
     client_to_server = open(myfifo, O_RDONLY);
 
-    printf("Bem-vinda/o ao i-banco\n\n");
+    if (client_to_server == -1) {
+        printf("ERRO open(myfifo, O_RDONLY)\n" );
+    }
 
     while (1) {
         while (read(client_to_server, &comando, sizeof(comando)) <= 0);
@@ -84,8 +86,9 @@ int main (int argc, char** argv) {
         if (item == NULL) {
             server_to_client = open(comando.path, O_WRONLY);
             if (server_to_client == -1) {
-                printf("ERRO\n");
+                printf("Erro ao abrir comando.path para server_to_client\n");
             } else {
+                /* insere o descritor do novo cliente na hashtable */
                 insert(comando.terminalPid, server_to_client);
             }
         }
@@ -103,7 +106,9 @@ int main (int argc, char** argv) {
 
                 /* Veririca se ha comandos no buffer */
                 while (comandosNoBuffer != 0) {
-                    pthread_cond_wait(&cheio, &semExMut);
+                    if (pthread_cond_wait(&cheio, &semExMut) != 0) {
+                        printf("ERRO: pthread_cond_wait - &cheio, &semExMut\n");
+                    }
                 }
 
                 pid = fork();
@@ -157,12 +162,20 @@ int main (int argc, char** argv) {
                 printf("FILHO TERMINADO (PID=%d; terminou %s)\n", pids[i].pid, (pids[i].estado > 0) ? "normalmente" : "abruptamente");
             }
             printf("--\n");
-            close(client_to_server);
+            if (close(client_to_server) != 0) {
+                printf("ERRO: close - client_to_server\n");
+            }
+
             unlink(myfifo);
-            /* Libertar tudo */
+
+            /* Libertar tudo da hash*/
+            freeHash();
+
             exit(EXIT_SUCCESS);
         } else if (comando.operacao == OP_SAIRTERMINAL) {
-            close(search(comando.terminalPid)->data);
+            if (close(search(comando.terminalPid)->data) != 0) {
+                printf("ERRO: close - search(comando.terminalPid)->data\n");
+            }
             delete(search(comando.terminalPid));
         } else {
             produtor(comando);

@@ -1,34 +1,38 @@
-TARGET = i-banco
-TARGET2 = i-banco-terminal
-PIPE = i-banco-pipe
-CC = gcc
-CFLAGS = -g -Wall -pedantic -pthread
-LDFLAGS=-lpthread
-EXCLUDE = i-banco-terminal.c
+all: i-banco i-banco-terminal
+i-banco: contas.o i-banco.o parte234.o parte4.o hashtable.o
+	gcc -pthread -o i-banco contas.o i-banco.o parte234.o parte4.o hashtable.o
 
-.PHONY: default all clean
+i-banco-terminal: commandlinereader.o i-banco-terminal.o contas.o parte4.o
+	gcc -pthread -o i-banco-terminal commandlinereader.o i-banco-terminal.o contas.o parte4.o
 
-default: $(TARGET)
-all: default
+commandlinereader.o : commandlinereader.c commandlinereader.h
+	gcc $(CFLAGS) -c commandlinereader.c
 
-OBJECTS = $(patsubst %.c, %.o, $(filter-out $(EXCLUDE), $(wildcard *.c)))
-HEADERS = $(wildcard *.h)
+contas.o : contas.c contas.h
+	gcc $(CFLAGS) -c contas.c
 
-%.o: %.c $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+parte4.o : parte4.c parte4.h
+	gcc $(CFLAGS) -c parte4.c
 
-.PRECIOUS: $(TARGET) $(OBJECTS)
+parte234.o : parte234.c parte234.h
+	gcc $(CFLAGS) -c parte234.c
 
-$(TARGET): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+hashtable.o : hashtable.c hashtable.h
+	gcc $(CFLAGS) -c hashtable.c
+
+i-banco-terminal.o: i-banco-terminal.c commandlinereader.h contas.h parte4.h
+	gcc $(CFLAGS) -c i-banco-terminal.c
+
+i-banco.o: i-banco.c contas.h parte234.h parte4.h hashtable.h
+	gcc $(CFLAGS) -c i-banco.c
+
+run-servidor: i-banco
+	./i-banco
+
+run-cliente: i-banco-terminal
+	./i-banco-terminal i-banco-pipe
 
 clean:
-	-rm -f *.o
-	-rm -f $(TARGET)
-	-rm -f $(TARGET2)
+	rm -f *.o *.txt *server_to_client_fifo_* i-banco i-banco-terminal i-banco-pipe
 
-run: $(TARGET)
-	./$(TARGET)
-
-run2: $(TARGET2)
-	./$(TARGET2) $(PIPE)
+CFLAGS = -g -Wall -pedantic

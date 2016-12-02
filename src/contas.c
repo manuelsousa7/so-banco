@@ -3,18 +3,11 @@
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
-* SYNOPSIS:     #include <stdio.h>
-*               #include <unistd.h> - sleep()
-*               #include <stdlib.h> - exit()
 *               #include "contas.h" - Prototipos dos comandos do banco
 * DESCRIPTION:  Funções que suportam todas as operações relacionadas com as contas
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
 #include "contas.h"
 
 #define atrasar() sleep(ATRASO)
@@ -34,10 +27,6 @@ void inicializarContas() {
 }
 
 int debitar(int idConta, int valor) {
-  atrasar();
-  atrasar();
-  atrasar();
-  atrasar();
   atrasar();
   if (!contaExiste(idConta))
     return -1;
@@ -61,14 +50,6 @@ int lerSaldo(int idConta) {
   if (!contaExiste(idConta))
     return -1;
   return contasSaldos[idConta - 1];
-}
-
-
-int transferirSacoAzul(int idConta) {
-  atrasar();
-  contasSaldos[0] += 0.10 * contasSaldos[idConta - 1];
-  contasSaldos[idConta - 1] -= 0.10 * contasSaldos[idConta - 1];
-  return 0;
 }
 
 

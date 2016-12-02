@@ -33,21 +33,24 @@
 
 int server_to_client;
 int alreadyOpened = 0;
-char myfifo2[100];
-int flag = 0;
-void han() {
-    flag = 1;
+char myfifo2[BUFFER_SIZE];
+int sigpipe = 0;
+
+void tratamentoSigPipe() {
+    sigpipe = 1;
 }
 
 void sendComandToServer(int client_to_server , int idConta, int idConta2, int valor, int OP) {
-    if (signal(SIGPIPE, han) == SIG_ERR) {
+    if (signal(SIGPIPE, tratamentoSigPipe) == SIG_ERR) {
         printf("simular: Não foi possivel tratar do sinal\n");
         exit(EXIT_FAILURE);
     }
+
     time_t start_t, end_t;
     double diff_t;
     char response[BUFFER_SIZE];
     time(&start_t);
+
     comando_t comando;
     comando.operacao = OP;
     comando.valor = valor;
@@ -59,24 +62,22 @@ void sendComandToServer(int client_to_server , int idConta, int idConta2, int va
 
     write(client_to_server, &comando, sizeof(comando));
 
-
     if (alreadyOpened == 0) {
         server_to_client = open(comando.path, O_RDONLY);
         alreadyOpened++;
     }
 
-
-    if ((flag != 1) && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
+    if ((sigpipe != 1) && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
         read(server_to_client, response, BUFFER_SIZE);
         printf("%s", response);
     }
     time(&end_t);
     diff_t = difftime(end_t, start_t);
-    if(flag == 1 && (comando.operacao != OP_SAIRTERMINAL)){
-        printf("O PIPE servidor foi fechado :( \n");
+    if (sigpipe == 1 && (comando.operacao != OP_SAIRTERMINAL)) {
+        printf("O PIPE servidor foi fechado :( \n\n");
     }
-    if(flag != 1 && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)){
-        printf("Tempo de execucao %.3f segundos\n", diff_t);
+    if (sigpipe != 1 && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
+        printf("Tempo de execucao %.3f segundos\n\n", diff_t);
     }
 }
 
@@ -84,7 +85,8 @@ void sendComandToServer(int client_to_server , int idConta, int idConta2, int va
 /******************************************************************************************
 * main()
 *
-* Arguments:    Nenhum
+* Arguments:    argc:  numero de argumentos passados a main
+*               argv:  array de strings que contem o conteudo passado como argumento a main
 * Returns: int  0
 * Description:  Leitura dos comandos do banco e criação de processos nas simulações
 *****************************************************************************************/
@@ -98,9 +100,9 @@ int main (int argc, char** argv) {
     if (argc == 2) {
         myfifo = argv[1];
     } else {
+        /* Se nao forem passados argumentos e assumido este pipe por default */
         myfifo = "i-banco-pipe";
     }
-    printf("%s %d\n", myfifo, argc);
 
     client_to_server = open(myfifo, O_WRONLY);
 
@@ -177,8 +179,14 @@ int main (int argc, char** argv) {
                 continue;
             }
             sendComandToServer(client_to_server, client_to_server, -1, -1, OP_SAIRTERMINAL);
-            close(client_to_server);
-            close(server_to_client);
+
+            if (close(client_to_server) != 0) {
+                printf("ERRO: close - client_to_server\n");
+            }
+            if (close(server_to_client) != 0) {
+                printf("ERRO: close - client_to_server\n");
+            }
+
             unlink(myfifo2);
             exit(EXIT_SUCCESS);
         }

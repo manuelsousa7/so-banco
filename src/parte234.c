@@ -20,7 +20,7 @@
 * Description:  Executa um comando que recebe como argumento (Não executa 2 comandos da mesma conta ao mesmo tempo)
 *****************************************************************************************/
 void executarComando(comando_t c) {
-	char output[100];
+	char output[BUFFER_SIZE];
 	switch (c.operacao) {
 	case OP_LERSALDO:
 		if (!contaExiste(c.idConta)) {
@@ -229,6 +229,10 @@ void inicializarThreadsSemaforosMutexes() {
 
 	fout = open(LOG_FILE, O_CREAT | O_WRONLY | O_APPEND, 0666);
 
+	if (fout == -1) {
+		printf("ERRO: open - params: [LOG_FILE, O_CREAT | O_WRONLY | O_APPEND, 0666]\n");
+	}
+
 	/* Incia Semáforos */
 	if (sem_init(&podeProd, 0, CMD_BUFFER_DIM) != 0) {
 		printf("ERRO: sem_init - params: [&podeProd, 0, CMD_BUFFER_DIM]\n");
@@ -254,10 +258,7 @@ void inicializarThreadsSemaforosMutexes() {
 /******************************************************************************************
 * produtor()
 *
-* Arguments:	idConta: id da conta sobre a qual queremos efetuar a operacao
-*               idConta2: id da conta sobre a qual queremos efetuar a operacao (usado apenas no comando transferir)
-				valor: valor correspondente à conta com idConta
-*               OP: operacao a efetuar (codigo das OP's definidas em macro)
+* Arguments:	comando: comando a adicionar no buffer
 *
 * Returns: void
 * Description:  Acrescenta novo comando a executar no buffer circular de dados
@@ -333,7 +334,9 @@ void killThreadsSemaforosMutexes() {
 	}
 
 	/* Destroi Variável de Condição */
-	pthread_cond_destroy(&cheio);
+	if (pthread_cond_destroy(&cheio) != 0){
+		printf("ERRO: pthread_cond_destroy - params: &cheio\n");
+	}
 
 	/* Destroi Semáforos */
 	if (sem_destroy(&podeProd) != 0) {

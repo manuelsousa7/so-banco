@@ -11,6 +11,7 @@
 *               #include <string.h> - char strings, strerror()
 *               #include "contas.h" - Prototipos de todas as operações relacionadas com contas
 *               #include "parte1.h" - Prototipos das funcoes da parte 1 - Defines (macros) dos comandos
+*				#include "parte4.h" - Prototipos das funcoes exclusivas a parte 4
 * DESCRIPTION:  Defines (macros) e Prototipos das funcoes da parte 2 e 3 (tarefas)
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
@@ -38,8 +39,10 @@
 #define OP_SAIRTERMINAL 8  /* Parte 4 */
 
 
-/* Operações - Comandos */
+/* Numero de tarefas Trabalhadoras */
 #define NUM_TRABALHADORAS 3
+
+/* Tamanho de elementos do Buffer - Definido em Funcao das tarefas trabalhadoras */
 #define CMD_BUFFER_DIM (NUM_TRABALHADORAS * 2)
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))

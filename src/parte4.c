@@ -4,7 +4,7 @@
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
 * SYNOPSIS:     #include "parte4.h" - Prototipos e Estruturas usadas na entrega 4
-* DESCRIPTION:  fdsjnkjnsfdjndfskjnsdfjknsdfnjkfsdkjndsfknjsdfjnksdfkjn
+* DESCRIPTION:  Funcoes relativas a parte 4 (somente)
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
@@ -13,12 +13,18 @@
 void escreverLog(int comando) {
 	pid_t tid;
 	char out[BUFFER_SIZE];
-	tid = syscall(SYS_gettid);
+	tid = syscall(SYS_gettid); /* syscall para obter tid da tarefa */
 	if (tid == -1) {
 		printf("ERRO: syscall - SYS_gettid\n");
 	}
-	snprintf(out, sizeof(out), "%d: %s\n", tid, comandos(comando));
-	write(fout, out, strlen(out));
+
+	if (snprintf(out, sizeof(out), "%d: %s\n", tid, comandos(comando)) < 0) {
+		printf("ERRO: snprintf\n");
+	}
+
+	if (write(fout, out, strlen(out)) < -1) {
+		printf("ERRO: write - params: [fout,out,strlen(out]\n");
+	}
 }
 
 char* comandos(int comando) {
@@ -42,12 +48,14 @@ char* comandos(int comando) {
 
 void iniciaRedirecionarOutput() {
 	char file[BUFFER_SIZE];
-	snprintf(file, sizeof(file), "i-banco-sim-%d.txt",  getpid());
+	if (snprintf(file, sizeof(file), "i-banco-sim-%d.txt",  getpid()) < 0) {
+		printf("ERRO: snprintf\n");
+	}
 
-	out = open(file, O_TRUNC | O_WRONLY | O_CREAT, 0600);
+	out = open(file, O_TRUNC | O_WRONLY | O_CREAT, 0666);
 
 	if (out == -1) {
-		printf("ERRO: open - params: [O_TRUNC | O_RDWR | O_CREAT, 0600]\n");
+		printf("ERRO: open - params: [O_TRUNC | O_RDWR | O_CREAT, 0666]\n");
 	}
 
 	if (dup2(out, fileno(stdout)) == -1) {
@@ -70,6 +78,8 @@ void pararRedirecionarOutput() {
 }
 
 
-void escrever(int fileDescriptor, char asd[]) {
-	write(fileDescriptor, asd, BUFFER_SIZE);
+void escrever(int fileDescriptor, char eOutput[]) {
+	if (write(fileDescriptor, eOutput, BUFFER_SIZE) < -1) {
+		printf("ERRO: write - params: [fileDescriptor,eOutput,BUFFER_SIZE]\n");
+	}
 }
