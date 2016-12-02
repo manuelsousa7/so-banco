@@ -39,6 +39,10 @@
 #define BUFFER_SIZE 100
 
 
+void han(){
+    printf("asdads\n");
+}
+
 /******************************************************************************************
 * main()
 *
@@ -64,7 +68,7 @@ int main (int argc, char** argv) {
     int server_to_client;
     char myfifo2[100];
     //char terminalPid[100];
-    char *myfifo = "/tmp/client_to_server_fifo";
+    char *myfifo = "i-banco-pipe";
     unlink(myfifo);
 
     /* create the FIFO (named pipe) */
@@ -133,6 +137,7 @@ int main (int argc, char** argv) {
                     exit(EXIT_SUCCESS);
                 } else if (pid > 0) { // Processo PAI
                     pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
+                    escrever(search(comando.terminalPid)->data, "simulado");
                 }
             }
         } else if (comando.operacao == OP_SAIR || comando.operacao == OP_SAIRAGORA) {
@@ -170,6 +175,13 @@ int main (int argc, char** argv) {
             close(client_to_server);
             unlink(myfifo);
             exit(EXIT_SUCCESS);
+        } else if (comando.operacao == OP_TERMINALSAIR) {
+            if (signal(SIGPIPE,han) == SIG_ERR) {
+                printf("simular: Não foi possivel tratar do sinal\n");
+                exit(EXIT_FAILURE);
+            }
+            close(search(comando.terminalPid)->data);
+            delete(search(comando.terminalPid));
         } else {
             produtor(comando);
         }

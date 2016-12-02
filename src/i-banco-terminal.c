@@ -22,6 +22,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <time.h>
 #include "contas.h"
 #include "commandlinereader.h"
 #include "parte1.h"
@@ -35,8 +36,11 @@
 int server_to_client;
 int alreadyOpened = 0;
 void sendComandToServer(int client_to_server, int server_to_client,  int idConta, int idConta2, int valor, int OP) {
+    time_t start_t, end_t;
+    double diff_t;
     char response[BUFFER_SIZE];
     char myfifo2[100];
+    time(&start_t);
     comando_t comando;
     comando.operacao = OP;
     comando.valor = valor;
@@ -50,8 +54,13 @@ void sendComandToServer(int client_to_server, int server_to_client,  int idConta
     snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
     server_to_client = open(myfifo2, O_RDONLY);
     read(server_to_client, response, BUFFER_SIZE);
-    printf("%s\n", response);
+    if (strcmp(response, "simulado") != 0) {
+        printf("%s\n", response);
+    }
     close(server_to_client);
+    time(&end_t);
+    diff_t = difftime(end_t, start_t);
+    printf("%f\n", diff_t);
     //return response;
 }
 
@@ -69,7 +78,14 @@ int main (int argc, char** argv) {
     int sairAgora = 0;
     int numargs = 0;
     int client_to_server;
-    char *myfifo = "/tmp/client_to_server_fifo";
+    char *myfifo;
+    if (argc == 2) {
+        myfifo = argv[1];
+        printf("asddasads\n");
+    } else {
+        myfifo = "i-banco-pipe";
+    }
+    printf("%s %d\n", myfifo, argc);
     //char *myfifo2 = "/tmp/server_to_client";
 
 
@@ -148,9 +164,18 @@ int main (int argc, char** argv) {
             }
             sendComandToServer(client_to_server, server_to_client, atoi(args[1]), atoi(args[2]), atoi(args[3]), OP_TRANSFERIR);
         }
+        /* terminal-sair */
+        else if (strcmp(args[0], COMANDO_TERMINALSAIR) == 0) {
+            if (numargs != 1) {
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_TERMINALSAIR);
+                continue;
+            }
+            sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_TERMINALSAIR);
+            exit(EXIT_SUCCESS);
+        }
         /* Simular */
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {
-            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, atoi(args[3]), OP_SIMULAR);
+            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, -1, OP_SIMULAR);
             continue;
         } else {
             printf("Comando desconhecido. Tente de novo.\n");
