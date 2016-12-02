@@ -35,4 +35,4 @@ run-cliente: i-banco-terminal
 clean:
 	rm -f *.o *.txt *server_to_client_fifo_* i-banco i-banco-terminal i-banco-pipe
 
-CFLAGS = -g -Wall -pedantic
+CFLAGS = -g -Wall -pedantic -pthread -lpthread
