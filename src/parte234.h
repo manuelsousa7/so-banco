@@ -35,7 +35,7 @@
 #define OP_DEBITAR 5
 #define OP_TRANSFERIR 6 /* Parte 3 */
 #define OP_SIMULAR 7  /* Parte 4 */
-#define OP_TERMINALSAIR 7  /* Parte 4 */
+#define OP_SAIRTERMINAL 8  /* Parte 4 */
 
 
 /* Operações - Comandos */

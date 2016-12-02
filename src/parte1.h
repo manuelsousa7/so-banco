@@ -22,7 +22,7 @@
 #define COMANDO_SAIR "sair"
 #define COMANDO_AGORA "agora"
 #define COMANDO_TRANSFERIR "transferir" /* Parte 3 */
-#define COMANDO_TERMINALSAIR "terminal-sair" /* Parte 4 */
+#define COMANDO_SAIRTERMINAL "sair-terminal" /* Parte 4 */
 /* Número Máximo de Processos */
 #define MAXCHILDS 20
 

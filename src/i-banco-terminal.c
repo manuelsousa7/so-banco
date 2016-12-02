@@ -51,13 +51,19 @@ void sendComandToServer(int client_to_server, int server_to_client,  int idConta
 
     printf("\n");
 
-    snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
-    server_to_client = open(myfifo2, O_RDONLY);
-    read(server_to_client, response, BUFFER_SIZE);
-    if (strcmp(response, "simulado") != 0) {
-        printf("%s\n", response);
+    if(alreadyOpened == 0){
+        snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
+        server_to_client = open(myfifo2, O_RDONLY);
+        alreadyOpened++;
     }
-    close(server_to_client);
+
+
+    if ((comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL))) {
+        printf("asdasddasada %d\n",comando.operacao);
+        read(server_to_client, response, BUFFER_SIZE);
+        printf("%s", response);
+        //close(server_to_client);
+    }
     time(&end_t);
     diff_t = difftime(end_t, start_t);
     printf("%f\n", diff_t);
@@ -87,12 +93,6 @@ int main (int argc, char** argv) {
     }
     printf("%s %d\n", myfifo, argc);
     //char *myfifo2 = "/tmp/server_to_client";
-
-
-    char myfifo2[100];
-    snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
-    printf("%s\n", myfifo2);
-
 
     client_to_server = open(myfifo, O_WRONLY);
 
@@ -165,12 +165,12 @@ int main (int argc, char** argv) {
             sendComandToServer(client_to_server, server_to_client, atoi(args[1]), atoi(args[2]), atoi(args[3]), OP_TRANSFERIR);
         }
         /* terminal-sair */
-        else if (strcmp(args[0], COMANDO_TERMINALSAIR) == 0) {
+        else if (strcmp(args[0], COMANDO_SAIRTERMINAL) == 0) {
             if (numargs != 1) {
-                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_TERMINALSAIR);
+                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SAIRTERMINAL);
                 continue;
             }
-            sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_TERMINALSAIR);
+            sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_SAIRTERMINAL);
             exit(EXIT_SUCCESS);
         }
         /* Simular */

@@ -39,7 +39,7 @@
 #define BUFFER_SIZE 100
 
 
-void han(){
+void han() {
     printf("asdads\n");
 }
 
@@ -67,6 +67,7 @@ int main (int argc, char** argv) {
     int client_to_server;
     int server_to_client;
     char myfifo2[100];
+    char fifoDelete[100];
     //char terminalPid[100];
     char *myfifo = "i-banco-pipe";
     unlink(myfifo);
@@ -85,21 +86,21 @@ int main (int argc, char** argv) {
 
         read(client_to_server, &comando, sizeof(comando));
         item = search(comando.terminalPid);
-        //printf("dasjbhasdhjbadsbhjasdjbh\n");
-        if (item != NULL) {
-            printf("Element found: %d\n", item->data);
-        } else {
+        printf("dasjbhasdhjbadsbhjasdjbh %d %s\n",comando.terminalPid,item);
+
+        if (item == NULL) {
+            printf("lalalalalaallaalallaal\n");
             snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", comando.terminalPid);
             //printf("%s\n", myfifo2);
 
             mkfifo(myfifo2, 0777);
-            //printf("antes\n");
+            printf("antes %s\n",myfifo2);
             server_to_client = open(myfifo2, O_WRONLY);
-            //printf("apos\n");
+            printf("apos\n");
             if (server_to_client == -1) {
                 printf("ERRO\n");
             } else {
-                printf("inseriu\n");
+                printf("inseriu %d\n",server_to_client);
                 insert(comando.terminalPid, server_to_client);
             }
         }
@@ -137,7 +138,7 @@ int main (int argc, char** argv) {
                     exit(EXIT_SUCCESS);
                 } else if (pid > 0) { // Processo PAI
                     pids[numPids++].pid = pid; //Vamos guardar os PIDs de todos os processos filho que forem criados
-                    escrever(search(comando.terminalPid)->data, "simulado");
+                    //escrever(search(comando.terminalPid)->data, "simulado");
                 }
             }
         } else if (comando.operacao == OP_SAIR || comando.operacao == OP_SAIRAGORA) {
@@ -175,17 +176,25 @@ int main (int argc, char** argv) {
             close(client_to_server);
             unlink(myfifo);
             exit(EXIT_SUCCESS);
-        } else if (comando.operacao == OP_TERMINALSAIR) {
-            if (signal(SIGPIPE,han) == SIG_ERR) {
-                printf("simular: Não foi possivel tratar do sinal\n");
-                exit(EXIT_FAILURE);
-            }
+        } else if (comando.operacao == OP_SAIRTERMINAL) {
+            //if (signal(SIGPIPE,han) == SIG_ERR) {
+            //    printf("simular: Não foi possivel tratar do sinal\n");
+            //    exit(EXIT_FAILURE);
+            //}
+            printf("terminal saiu1\n");
+            snprintf(fifoDelete, sizeof(fifoDelete), "%s%d", "/tmp/server_to_client_fifo_" , comando.terminalPid);
+            printf("terminal saiu2\n");
+
             close(search(comando.terminalPid)->data);
+            printf("terminal saiu3 %s %d\n",fifoDelete,search(comando.terminalPid)->data);
+
+            unlink(fifoDelete);
             delete(search(comando.terminalPid));
+            printf("terminal saiu\n");
         } else {
             produtor(comando);
         }
-        printf("fim do while\n");
+        //printf("fim do while\n");
         //printf("%d\n", comando.idConta);
         // numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
 
