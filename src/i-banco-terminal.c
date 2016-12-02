@@ -44,12 +44,14 @@ void sendComandToServer(int client_to_server, int server_to_client,  int idConta
     comando.idConta2 = idConta2;
     comando.terminalPid = getpid();
     write(client_to_server, &comando, sizeof(comando));
-    printf("fodasse\n");
+
+    printf("\n");
+
     snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
     server_to_client = open(myfifo2, O_RDONLY);
     read(server_to_client, response, BUFFER_SIZE);
+    printf("%s\n", response);
     close(server_to_client);
-    printf("response = %s\n", response);
     //return response;
 }
 
@@ -95,23 +97,17 @@ int main (int argc, char** argv) {
                 continue;
             }
 
-
-
-            //TODO
             if (sairAgora == 1) {
-                puts("sendComandToServer(sairagoa)");
+                sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_SAIRAGORA);
             } else {
-                puts("endComandToServer(sair)");
+                sendComandToServer(client_to_server, server_to_client, -1, -1, -1, OP_SAIR);
             }
 
-
-
-            close(client_to_server);
-            close(server_to_client);
-            exit(EXIT_SUCCESS);
+            //close(client_to_server);
+            //close(server_to_client);
+            //exit(EXIT_SUCCESS);
 
         }
-
         else if (numargs == 0)
             /* Nenhum argumento; ignora e volta a pedir */
             continue;
@@ -152,18 +148,9 @@ int main (int argc, char** argv) {
             }
             sendComandToServer(client_to_server, server_to_client, atoi(args[1]), atoi(args[2]), atoi(args[3]), OP_TRANSFERIR);
         }
-        /* Saco Azul */
-        else if (strcmp(args[0], COMANDO_SACOAZUL) == 0) {
-            if (numargs != 2) {
-                printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SACOAZUL);
-                continue;
-            }
-            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, -1, OP_SACOAZUL);
-        }
-
         /* Simular */
         else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {
-            printf("adsasdadsadsads\n");
+            sendComandToServer(client_to_server, server_to_client, atoi(args[1]), -1, atoi(args[3]), OP_SIMULAR);
             continue;
         } else {
             printf("Comando desconhecido. Tente de novo.\n");

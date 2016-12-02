@@ -34,8 +34,7 @@
 #define OP_CREDITAR 4
 #define OP_DEBITAR 5
 #define OP_TRANSFERIR 6 /* Parte 3 */
-#define OP_SACOAZUL 7  /* Parte 3 Avaliacao */
-#define OP_SIMULAR 8  /* Parte 3 */
+#define OP_SIMULAR 7  /* Parte 4 */
 
 /* Operações - Comandos */
 #define NUM_TRABALHADORAS 3

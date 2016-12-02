@@ -31,9 +31,8 @@ char* comandos(int comando) {
 		return COMANDO_DEBITAR;
 	case OP_TRANSFERIR:
 		return COMANDO_TRANSFERIR;
-	case OP_SACOAZUL:
-		return COMANDO_SACOAZUL;
-		break;
+	case OP_SIMULAR:
+		return COMANDO_SIMULAR;
 	case OP_SAIR:
 		return COMANDO_SAIR;
 	default:
@@ -70,15 +69,6 @@ void pararRedirecionarOutput() {
 	}
 }
 
-
-int arraySearch(int searchVal, int arraySize, int array[]) {
-	int i;
-	for (i = 0; i < arraySize; i++) {
-		if(array[i] == searchVal)
-			return i;
-	}
-	return -1;
-}
 
 void escrever(int fileDescriptor,char asd[]){
 	//printf("c%s\n", asd);

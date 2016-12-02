@@ -138,46 +138,6 @@ void executarComando(comando_t c) {
 			escrever(search(c.terminalPid)->data, output);
 		}
 		break;
-	case OP_SACOAZUL:
-		if (c.idConta == 1) {
-			snprintf(output, sizeof(output), "Saldo do saco azul %d\n\n", lerSaldo(1));
-			escrever(search(c.terminalPid)->data, output);
-			break;
-		}
-		else if (!contaExiste(c.idConta)) {
-			snprintf(output, sizeof(output), "Erro Saco Azul\n\n");
-			escrever(search(c.terminalPid)->data, output);
-			break;
-		}
-		/* Fechar Contas relativas a operacao */
-		if (pthread_mutex_lock(&threadsContas[0]) != 0) {
-			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[MIN(c.idConta-1, c.idConta2-1)]\n");
-			escrever(search(c.terminalPid)->data, output);
-		}
-		if (pthread_mutex_lock(&threadsContas[c.idConta - 1]) != 0) {
-			snprintf(output, sizeof(output), "ERRO: thread_mutex_lock - &threadsContas[MAX(c.idConta-1, c.idConta2-1)]\n");
-			escrever(search(c.terminalPid)->data, output);
-		}
-
-		if (transferirSacoAzul(c.idConta) < 0) {
-			snprintf(output, sizeof(output), "Erro %s\n\n", COMANDO_SACOAZUL);
-			escrever(search(c.terminalPid)->data, output);
-		} else {
-			snprintf(output, sizeof(output), "%s OK\n\n", COMANDO_SACOAZUL);
-			escrever(search(c.terminalPid)->data, output);
-		}
-
-
-		/* Abrir Contas relativas a operacao */
-		if (pthread_mutex_unlock(&threadsContas[c.idConta - 1]) != 0) {
-			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[MAX(c.idConta-1,c.idConta2-1)]\n");
-			escrever(search(c.terminalPid)->data, output);
-		}
-		if (pthread_mutex_unlock(&threadsContas[0]) != 0) {
-			snprintf(output, sizeof(output), "ERRO: thread_mutex_unlock - &threadsContas[MIN(c.idConta-1,c.idConta2-1)]\n");
-			escrever(search(c.terminalPid)->data, output);
-		}
-		break;
 	case OP_SAIR:
 		pthread_exit(NULL); /* Termina tarefa - ESTA FUNCAO TEM SEMPRE SUCESSO */
 		exit(EXIT_SUCCESS);
