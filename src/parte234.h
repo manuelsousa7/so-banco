@@ -53,6 +53,7 @@ typedef struct {
 	int idConta2;
 	int valor;
 	int terminalPid;
+	char path[100];
 } comando_t;
 
 pthread_t tid[NUM_TRABALHADORAS]; /* Vetor que guarda os Thread ID's de todas as tarefas */

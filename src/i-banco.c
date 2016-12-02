@@ -66,14 +66,16 @@ int main (int argc, char** argv) {
 
     int client_to_server;
     int server_to_client;
-    char myfifo2[100];
+    //char myfifo2[100];
     char fifoDelete[100];
     //char terminalPid[100];
     char *myfifo = "i-banco-pipe";
-    unlink(myfifo);
+    if (unlink(myfifo) == -1) {
+        printf("ajbdshajsbhdajbhds\n");
+    }
 
     /* create the FIFO (named pipe) */
-    mkfifo(myfifo, 0777);
+    mkfifo(myfifo, 0666);
 
     //char *myfifo2 = "/tmp/client_to_server_fifo";
 
@@ -83,23 +85,27 @@ int main (int argc, char** argv) {
     printf("Bem-vinda/o ao i-banco\n\n");
 
     while (1) {
+        printf("apos while\n");
+        //display();
+        while (read(client_to_server, &comando, sizeof(comando)) <= 0);
 
-        read(client_to_server, &comando, sizeof(comando));
+
         item = search(comando.terminalPid);
-        printf("dasjbhasdhjbadsbhjasdjbh\n");
+        printf("dasjbhasdhjbadsbhjasdjbh %d\n", comando.terminalPid);
 
         if (item == NULL) {
-            snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", comando.terminalPid);
-            //printf("%s\n", myfifo2);
+            printf("item==NULL ultrapassado\n");
+            //snprintf(myfifo2, sizeof(myfifo2), "%s%d", "server_to_client_fifo_", comando.terminalPid);
+            //printf("comando.path%s\n", (comando.path));
 
-            mkfifo(myfifo2, 0777);
-            //printf("antes\n");
-            server_to_client = open(myfifo2, O_WRONLY);
-            //printf("apos\n");
+            //mkfifo(comando.path, 0777);
+            printf("antes\n");
+            server_to_client = open(comando.path, O_WRONLY);
+            printf("apos\n");
             if (server_to_client == -1) {
                 printf("ERRO\n");
             } else {
-                printf("inseriu %d\n",server_to_client);
+                printf("inseriu %d\n", server_to_client);
                 insert(comando.terminalPid, server_to_client);
             }
         }
@@ -176,20 +182,19 @@ int main (int argc, char** argv) {
             unlink(myfifo);
             exit(EXIT_SUCCESS);
         } else if (comando.operacao == OP_SAIRTERMINAL) {
-            //if (signal(SIGPIPE,han) == SIG_ERR) {
-            //    printf("simular: Não foi possivel tratar do sinal\n");
-            //    exit(EXIT_FAILURE);
-            //}
             printf("terminal saiu1\n");
-            snprintf(fifoDelete, sizeof(fifoDelete), "%s%d", "/tmp/server_to_client_fifo_" , comando.terminalPid);
-            printf("terminal saiu2\n");
+            //snprintf(fifoDelete, sizeof(fifoDelete), "%s%d", "/tmp/server_to_client_fifo_" , comando.terminalPid);
+            printf("terminal saiu2 %d\n", search(comando.terminalPid)->data);
 
             close(search(comando.terminalPid)->data);
-            printf("terminal saiu3 %s %d\n",fifoDelete,search(comando.terminalPid)->data);
+            printf("terminal saiu3 %s %d\n", fifoDelete, search(comando.terminalPid)->data);
 
-            unlink(fifoDelete);
+
             delete(search(comando.terminalPid));
-            printf("terminal saiu\n");
+            //asd
+
+            //close(comando.idConta); // termina client_to_server vindo do terminal (idConta e usado apenas para transportar)
+            printf("terminal saiuu\n");
         } else {
             produtor(comando);
         }
@@ -198,4 +203,5 @@ int main (int argc, char** argv) {
         // numargs = readLineArguments(args, MAXARGS + 1, buffer, BUFFER_SIZE);
 
     }
+    printf("fim dos fins\n");
 }

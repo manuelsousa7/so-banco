@@ -25,8 +25,6 @@
 #include <time.h>
 #include "contas.h"
 #include "commandlinereader.h"
-#include "parte1.h"
-#include "parte234.h"
 #include "parte4.h"
 
 /* Constantes */
@@ -35,11 +33,20 @@
 
 int server_to_client;
 int alreadyOpened = 0;
-void sendComandToServer(int client_to_server ,int idConta, int idConta2, int valor, int OP) {
+char myfifo2[100];
+int flag = 0;
+void han() {
+    flag = 1;
+}
+
+void sendComandToServer(int client_to_server , int idConta, int idConta2, int valor, int OP) {
+    if (signal(SIGPIPE, han) == SIG_ERR) {
+        printf("simular: Não foi possivel tratar do sinal\n");
+        exit(EXIT_FAILURE);
+    }
     time_t start_t, end_t;
     double diff_t;
     char response[BUFFER_SIZE];
-    char myfifo2[100];
     time(&start_t);
     comando_t comando;
     comando.operacao = OP;
@@ -47,18 +54,21 @@ void sendComandToServer(int client_to_server ,int idConta, int idConta2, int val
     comando.idConta = idConta;
     comando.idConta2 = idConta2;
     comando.terminalPid = getpid();
+
+    strcpy(comando.path, myfifo2);
+    printf("comando.path %s\n", comando.path);
+
     write(client_to_server, &comando, sizeof(comando));
 
-    printf("\n");
+    //printf("\n");
 
     if (alreadyOpened == 0) {
-        snprintf(myfifo2, sizeof(myfifo2), "%s%d", "/tmp/server_to_client_fifo_", getpid());
-        server_to_client = open(myfifo2, O_RDONLY);
+        server_to_client = open(comando.path, O_RDONLY);
         alreadyOpened++;
     }
 
 
-    if ((comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
+    if ((flag != 1) && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)) {
         printf("asdasddasada %d\n", comando.operacao);
         read(server_to_client, response, BUFFER_SIZE);
         printf("%s", response);
@@ -66,7 +76,12 @@ void sendComandToServer(int client_to_server ,int idConta, int idConta2, int val
     }
     time(&end_t);
     diff_t = difftime(end_t, start_t);
-    printf("%f\n", diff_t);
+    if(flag == 1 && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)){
+        printf("O PIPE servidor foi fechado :( \n");
+    }
+    if(flag != 1 && (comando.operacao != OP_SIMULAR) && (comando.operacao != OP_SAIR) && (comando.operacao != OP_SAIRAGORA) && (comando.operacao != OP_SAIRTERMINAL)){
+        printf("Tempo de execucao %.3f segundos\n", diff_t);
+    }
     //return response;
 }
 
@@ -95,6 +110,9 @@ int main (int argc, char** argv) {
     //char *myfifo2 = "/tmp/server_to_client";
 
     client_to_server = open(myfifo, O_WRONLY);
+
+    snprintf(myfifo2, sizeof(myfifo2), "%s%d", "server_to_client_fifo_", getpid());
+    mkfifo(myfifo2, 0666);
 
     //printf("aaa %d %d\n", client_to_server,server_to_client);
     printf("Bem-vinda/o ao i-banco\n\n");
@@ -170,13 +188,15 @@ int main (int argc, char** argv) {
                 printf("%s: Sintaxe inválida, tente de novo.\n", COMANDO_SAIRTERMINAL);
                 continue;
             }
-            sendComandToServer(client_to_server, -1, -1, -1, OP_SAIRTERMINAL);
+            sendComandToServer(client_to_server, client_to_server, -1, -1, OP_SAIRTERMINAL);
+            close(client_to_server);
+            close(server_to_client);
+            unlink(myfifo2);
             exit(EXIT_SUCCESS);
         }
         /* Simular */
-        else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2) {
+        else if (strcmp(args[0], COMANDO_SIMULAR) == 0 && numargs == 2 && atoi(args[1]) > 0) {
             sendComandToServer(client_to_server, atoi(args[1]), -1, -1, OP_SIMULAR);
-            continue;
         } else {
             printf("Comando desconhecido. Tente de novo.\n");
         }
