@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!-- saved from url=(0098)https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/ -->
+<html lang="en" class="sidebar-hidden"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <title>Sistemas Operativos 2016/2017</title>
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+        <link rel="stylesheet" href="./parte1_files/book.css">
+        <link href="./parte1_files/css" rel="stylesheet" type="text/css">
+
+        <link rel="shortcut icon" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/favicon.png">
+
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="./parte1_files/font-awesome.min.css">
+
+        <link rel="stylesheet" href="./parte1_files/highlight.css">
+        <link rel="stylesheet" href="./parte1_files/tomorrow-night.css" disabled="">
+
+        <!-- MathJax -->
+        <script type="text/javascript" src="./parte1_files/MathJax.js"></script>
+
+        <!-- Fetch JQuery from CDN but have a local fallback -->
+        <script src="./parte1_files/jquery-2.1.4.min.js"></script>
+        <script>
+            if (typeof jQuery == 'undefined') {
+                document.write(unescape("%3Cscript src='jquery.js'%3E%3C/script%3E"));
+            }
+        </script>
+    <style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+    <body class="rust"><div id="MathJax_Message" style="display: none;"></div>
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme = localStorage.getItem('theme');
+            if (theme == null) { theme = 'light'; }
+            $('body').removeClass().addClass(theme);
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var sidebar = localStorage.getItem('sidebar');
+            if (sidebar === "hidden") { $("html").addClass("sidebar-hidden") }
+            else if (sidebar === "visible") { $("html").addClass("sidebar-visible") }
+        </script>
+
+        <div id="sidebar" class="sidebar">
+            <ul class="chapter"><li><a href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/ex1.html" class="active"><strong>1.</strong> Exercício 1</a></li></ul>
+        </div>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar" class="menu-bar">
+                    <div class="left-buttons">
+                        <i id="sidebar-toggle" class="fa fa-bars"></i>
+                        <i id="theme-toggle" class="fa fa-paint-brush"></i>
+                    </div>
+
+                    <h1 class="menu-title">Sistemas Operativos 2016/2017</h1>
+
+                    <div class="right-buttons">
+                        <i id="print-button" class="fa fa-print" title="Print this book"></i>
+                    </div>
+                </div>
+
+                <div id="content" class="content">
+                    <a class="header" name="Exercício 1" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/#Exerc%C3%ADcio%201"><h1>Exercício 1</h1></a>
+<hr>
+<a class="header" name="Ligações importantes" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/#Liga%C3%A7%C3%B5es%20importantes"><h2>Ligações importantes</h2></a>
+<ul>
+<li><a href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/SO-enunciado-ex1-projeto-2016-17-v1.pdf">Enunciado</a></li>
+<li><a href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/exercicio1-base.zip">Código inicial</a></li>
+<li><a href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/SO-ex1-solucao-v1.zip">Proposta de solução</a></li>
+</ul>
+<a class="header" name="Perguntas frequentes" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/#Perguntas%20frequentes"><h2>Perguntas frequentes</h2></a>
+<a class="header" name="Para o processo pai enviar um signal a todos os seus filhos, devo i) chamar a função kill individualmente para cada processo filho; ou ii) chamar a função kill apenas uma vez usando pid=0 no primeiro argumento?" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/#Para%20o%20processo%20pai%20enviar%20um%20signal%20a%20todos%20os%20seus%20filhos%2C%20devo%20i)%20chamar%20a%20fun%C3%A7%C3%A3o%20kill%20individualmente%20para%20cada%20processo%20filho%3B%20ou%20ii)%20chamar%20a%20fun%C3%A7%C3%A3o%20kill%20apenas%20uma%20vez%20usando%20pid%3D0%20no%20primeiro%20argumento%3F"><h4>Para o processo pai enviar um signal a todos os seus filhos, devo i) chamar a função kill individualmente para cada processo filho; ou ii) chamar a função kill apenas uma vez usando pid=0 no primeiro argumento?</h4></a>
+<p>Ambas as alternativas serão aceites, desde que corretamente implementadas.</p>
+<a class="header" name="Os &quot;outputs&quot; do processo pai e processos filho a correr simulações aparecem todos intercalados no ecrã, o que dificulta a visualização dos mesmos. Deve a solução do 1º exercício resolver esse problema?" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/#Os%20%22outputs%22%20do%20processo%20pai%20e%20processos%20filho%20a%20correr%20simula%C3%A7%C3%B5es%20aparecem%20todos%20intercalados%20no%20ecr%C3%A3%2C%20o%20que%20dificulta%20a%20visualiza%C3%A7%C3%A3o%20dos%20mesmos.%20Deve%20a%20solu%C3%A7%C3%A3o%20do%201%C2%BA%20exerc%C3%ADcio%20resolver%20esse%20problema%3F"><h4>Os "outputs" do processo pai e processos filho a correr simulações aparecem todos intercalados no ecrã, o que dificulta a visualização dos mesmos. Deve a solução do 1º exercício resolver esse problema?</h4></a>
+<p>Não. Essa limitação está prevista nesta fase do projeto. Essa limitação será
+eliminada num exercício posterior.</p>
+<a class="header" name="No caso de &#39;sair agora&#39;, os processos filho terminados na sequência do signal enviado pelo processo pai devem ser considerados como &#39;terminou normalmente&#39; ou &#39;terminou abruptamente&#39;?" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/#No%20caso%20de%20&#39;sair%20agora&#39;%2C%20os%20processos%20filho%20terminados%20na%20sequ%C3%AAncia%20do%20signal%20enviado%20pelo%20processo%20pai%20devem%20ser%20considerados%20como%20&#39;terminou%20normalmente&#39;%20ou%20&#39;terminou%20abruptamente&#39;%3F"><h4>No caso de 'sair agora', os processos filho terminados na sequência do signal enviado pelo processo pai devem ser considerados como 'terminou normalmente' ou 'terminou abruptamente'?</h4></a>
+<p>Apesar de ter sido desencadeada por um signal, a terminação do filho no caso do
+"sair agora" é feita de forma ordeira e usando a função exit. Logo deve ser
+impresso "terminou normalmente" nesse caso.</p>
+<a class="header" name="Devo usar a função &quot;atrasar&quot; na implementação do comando simular?" href="https://groups.ist.utl.pt/~leic-so.daemon/2016-2017/laboratorios/aulas3-4%20-%20ex1%20-%20projeto/#Devo%20usar%20a%20fun%C3%A7%C3%A3o%20%22atrasar%22%20na%20implementa%C3%A7%C3%A3o%20do%20comando%20simular%3F"><h4>Devo usar a função "atrasar" na implementação do comando simular?</h4></a>
+<p>Não sendo obrigatório, recomenda-se que a função "simular" recorra às funções já
+existentes (debitar, creditar e lerSaldo) para acesso aos saldos de cada conta.</p>
+<p>Dessa forma, cada acesso feito durante uma simulação é implicitamente atrasado
+(por via da função atrasar), o que torna mais fácil observar a evolução
+concorrente dos processos pai e filho; isto é fundamental para compreender se o
+programa está a sincronizar corretamente os processos no caso dos comandos
+"sair" e "sair agora".</p>
+
+                </div>
+
+                <!-- Mobile navigation buttons -->
+                
+
+                
+
+            </div>
+
+            
+
+            
+
+        </div>
+
+
+        <!-- Local fallback for Font Awesome -->
+        <script>
+            if ($(".fa").css("font-family") !== "FontAwesome") {
+                $('<link rel="stylesheet" type="text/css" href="_FontAwesome/css/font-awesome.css">').prependTo('head');
+            }
+        </script>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        
+        <script type="text/javascript">
+            var socket = new WebSocket("ws://localhost:3001");
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload(true); // force reload from server (not from cache)
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+    
+
+        <script src="./parte1_files/highlight.js"></script>
+        <script src="./parte1_files/book.js"></script>
+    
+
+</body></html>
