@@ -3,25 +3,18 @@
 * Author:       Beatriz Correia (84696) / Manuel Sousa (84740)
 * Revision:
 * NAME:         Banco - IST/SO - 2016/2017 1º Semestre
-* SYNOPSIS:     #include <stdio.h>
-*               #include <unistd.h> - sleep()
-*               #include <stdlib.h> - exit()
 *               #include "contas.h" - Prototipos dos comandos do banco
 * DESCRIPTION:  Funções que suportam todas as operações relacionadas com as contas
 * DIAGNOSTICS:  OK
 *****************************************************************************************/
 
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <signal.h>
 #include "contas.h"
 
 #define atrasar() sleep(ATRASO)
 
 int contasSaldos[NUM_CONTAS];
 
-int flag = -1; //Flag que vai ser usada para tratamento de signals
+int flag = -1; /* Flag que vai ser usada para tratamento de signals */
 
 int contaExiste(int idConta) {
   return (idConta > 0 && idConta <= NUM_CONTAS);
@@ -60,14 +53,6 @@ int lerSaldo(int idConta) {
 }
 
 
-int transferirSacoAzul(int idConta) {
-  atrasar();
-  contasSaldos[0] += 0.10 * contasSaldos[idConta - 1];
-  contasSaldos[idConta - 1] -= 0.10 * contasSaldos[idConta - 1];
-  return 0;
-}
-
-
 /******************************************************************************************
 * transferir()
 *
@@ -80,7 +65,7 @@ int transferirSacoAzul(int idConta) {
 *****************************************************************************************/
 int transferir(int idConta1, int idConta2, int valor) {
   atrasar();
-  if (contasSaldos[idConta1 - 1] < valor) //Verifica se ha saldo disponivel
+  if (contasSaldos[idConta1 - 1] < valor) /* Verifica se ha saldo disponivel */
     return -1;
   contasSaldos[idConta1 - 1] -= valor;
   contasSaldos[idConta2 - 1] += valor;
@@ -112,7 +97,7 @@ void handler() {
 *****************************************************************************************/
 void isDead() {
   if (flag == 1) {
-    exit(2); //Houve Signal
+    exit(2); /* Houve Signal */
   }
 }
 
@@ -125,6 +110,9 @@ void isDead() {
 * Description:  Faz uma simulacao (juros) de um numero de anos de todas as contas do banco
 *****************************************************************************************/
 void simular(int numAnos) {
+  int contasSaldosSimular[NUM_CONTAS];
+  int i,ii;
+
   /* Se houver um problema a tratar do Signal vai ocorrer um erro*/
   if (signal(SIGUSR1, handler) == SIG_ERR) {
     printf("simular: Não foi possivel tratar do sinal\n");
@@ -132,23 +120,22 @@ void simular(int numAnos) {
   }
 
 
-  int contasSaldosSimular[NUM_CONTAS];
-  //Copia dos saldos das contas
-  for (int i = 0; i < NUM_CONTAS; i++) {
+  /* Copia dos saldos das contas */
+  for (i = 0; i < NUM_CONTAS; i++) {
     contasSaldosSimular[i] = lerSaldo(i + 1);
   }
 
-  isDead(); //Verifica se ocorreu um sinal
+  isDead(); /* Verifica se ocorreu um sinal */
 
-  for (int i = 0; i <= numAnos; i++) {
+  for (i = 0; i <= numAnos; i++) {
     printf("SIMULACAO: Ano %d\n=================\n", i);
-    for (int ii = 0; ii < NUM_CONTAS; ii++) {
+    for (ii = 0; ii < NUM_CONTAS; ii++) {
       if (i != 0 && contasSaldosSimular[ii] != 0) {
         contasSaldosSimular[ii] = (contasSaldosSimular[ii] * (1 + TAXAJURO) - CUSTOMANUTENCAO);
       }
       printf("Conta %d, Saldo %d\n", ii + 1, contasSaldosSimular[ii] > 0 ? contasSaldosSimular[ii] : -contasSaldosSimular[ii]);
     }
-    isDead(); //Verifica se ocorreu um sinal
+    isDead(); /* Verifica se ocorreu um sinal */
     printf("\n");
   }
   exit(1);
