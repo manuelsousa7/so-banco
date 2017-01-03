@@ -17,14 +17,14 @@ Server Side
     cd /src/
     make clean
     make all
-    make run-servidor //
+    make run-servidor
 ```
 
 
 Client Side
 ```
     cd /src/
-    make run-client //
+    make run-cliente
 ```
 
 
